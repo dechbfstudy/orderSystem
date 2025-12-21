@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: orderSystem
+jwt:
+  secret: dianchong888666
+  expiration: 3600
