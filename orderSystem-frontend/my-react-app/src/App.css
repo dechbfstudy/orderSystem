@@ -1,0 +1,17 @@
+/* src/App.css */
+@import 'antd/dist/reset.css';
+
+/* 摇晃动画 Keyframes */
+@keyframes waveEffectShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px) rotate(-5deg); }
+    50% { transform: translateX(5px) rotate(5deg); }
+    75% { transform: translateX(-5px) rotate(-5deg); }
+    100% { transform: translateX(0); }
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
