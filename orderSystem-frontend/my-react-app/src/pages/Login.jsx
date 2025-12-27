@@ -16,7 +16,7 @@ const LoginPage = () => {
             localStorage.setItem('token', 'dummy-token');
             message.success(t('登录成功！'));
             setLoading(false);
-            navigate('/');
+            navigate('/dashboard');
         }, 800);
     };
 

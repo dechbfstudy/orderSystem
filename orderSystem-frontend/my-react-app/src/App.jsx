@@ -23,13 +23,12 @@ const App = () => {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
-
                     <Route path="/" element={
                         <PrivateRoute>
                             <MainLayout />
                         </PrivateRoute>
                     }>
-                        <Route index element={<Home />} />
+                        <Route index element={<Navigate to="/dashboard" replace />} />
                         <Route path="dashboard" element={<Home />} />
                         <Route path="system/permissions" element={<PermissionSettings />} />
                         <Route path="system/menus" element={<MenuManagement />} />
