@@ -60,28 +60,28 @@ const MainLayout = () => {
 
     // 菜单结构
     const menuItems = [
-        { key: '/dashboard', icon: <DashboardOutlined />, label: t('menu.dashboard') },
+        { key: '/dashboard', icon: <DashboardOutlined />, label: t('主页') },
         {
             key: 'sub-system',
             icon: <SettingOutlined />,
-            label: t('menu.system'),
+            label: t('系统设置'),
             children: [
-                { key: '/system/permissions', icon: <SafetyCertificateOutlined />, label: t('menu.permissions') },
-                { key: '/system/menus', icon: <AppstoreOutlined />, label: t('menu.menus') },
+                { key: '/system/permissions', icon: <SafetyCertificateOutlined />, label: t('权限设置') },
+                { key: '/system/menus', icon: <AppstoreOutlined />, label: t('菜单管理') },
             ]
         },
-        { key: '/users', icon: <UserOutlined />, label: t('menu.users') },
-        { key: '/orders', icon: <ShoppingCartOutlined />, label: t('menu.orders') },
+        { key: '/users', icon: <UserOutlined />, label: t('用户管理') },
+        { key: '/orders', icon: <ShoppingCartOutlined />, label: t('订单管理') },
     ];
 
     // 面包屑映射
     const breadcrumbNameMap = {
-        '/dashboard': t('menu.dashboard'),
-        '/system': t('menu.system'),
-        '/system/permissions': t('menu.permissions'),
-        '/system/menus': t('menu.menus'),
-        '/users': t('menu.users'),
-        '/orders': t('menu.orders'),
+        '/dashboard': t('主页'),
+        '/system': t('系统设置'),
+        '/system/permissions': t('权限设置'),
+        '/system/menus': t('菜单管理'),
+        '/users': t('用户管理'),
+        '/orders': t('订单管理'),
     };
 
     const [openKeys, setOpenKeys] = useState([]);
@@ -94,13 +94,13 @@ const MainLayout = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        message.success(t('user.logout'));
+        message.success(t('退出成功！'));
         navigate('/login');
     };
 
     const handleChangePassword = async () => {
         setTimeout(() => {
-            message.success('密码修改成功，请重新登录');
+            message.success(t('密码修改成功，请重新登录'));
             setPasswordModalOpen(false);
             passwordForm.resetFields();
             handleLogout();
@@ -109,16 +109,16 @@ const MainLayout = () => {
 
     const userMenuTokens = {
         items: [
-            { key: 'settings', icon: <SkinOutlined />, label: t('user.settings'), onClick: () => setSettingOpen(true) },
-            { key: 'password', icon: <LockOutlined />, label: t('user.password'), onClick: () => setPasswordModalOpen(true) },
+            { key: 'settings', icon: <SkinOutlined />, label: t('个性化设置'), onClick: () => setSettingOpen(true) },
+            { key: 'password', icon: <LockOutlined />, label: t('修改密码'), onClick: () => setPasswordModalOpen(true) },
             { type: 'divider' },
-            { key: 'logout', icon: <LogoutOutlined />, label: t('user.logout'), onClick: handleLogout }
+            { key: 'logout', icon: <LogoutOutlined />, label: t('退出登录'), onClick: handleLogout }
         ]
     };
 
     const pathSnippets = location.pathname.split('/').filter((i) => i);
     const breadcrumbItems = [
-        { title: <Link to="/dashboard">{t('menu.dashboard')}</Link>, key: 'home' },
+        { title: <Link to="/dashboard">{t('主页')}</Link>, key: 'home' },
     ];
     pathSnippets.forEach((_, index) => {
         const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
@@ -167,7 +167,7 @@ const MainLayout = () => {
                         <Dropdown menu={userMenuTokens}>
               <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                 <Avatar style={{ backgroundColor: primaryColor }} icon={<UserOutlined />} />
-                <span style={{ marginLeft: 8 }}>{t('user.admin')}</span>
+                <span style={{ marginLeft: 8 }}>{t('管理员')}</span>
               </span>
                         </Dropdown>
                     </div>
@@ -182,24 +182,24 @@ const MainLayout = () => {
 
             {/* 设置抽屉 */}
             <Drawer
-                title={t('settings.title')}
+                title={t('个性化设置')}
                 placement="right"
                 onClose={() => setSettingOpen(false)}
                 open={settingOpen}
                 width={360}
             >
                 <div style={{ marginBottom: 24 }}>
-                    <h4>{t('settings.language')}</h4>
-                    <Segmented options={[{ label: '简体中文', value: 'zh' }, { label: 'English', value: 'en' }]} value={language} onChange={setLanguage} block />
+                    <h4>{t('语言设置')}</h4>
+                    <Segmented options={[{ label: t('中文'), value: 'zh' }, { label: t('英文'), value: 'en' }]} value={language} onChange={setLanguage} block />
                 </div>
 
                 <div style={{ marginBottom: 24 }}>
-                    <h4>{t('settings.size')}</h4>
+                    <h4>{t('组件尺寸')}</h4>
                     <Segmented options={['small', 'middle', 'large']} value={componentSize} onChange={setComponentSize} block />
                 </div>
 
                 <div style={{ marginBottom: 24 }}>
-                    <h4>{t('settings.wave')}</h4>
+                    <h4>{t('波纹效果')}</h4>
                     <Select
                         value={waveType} onChange={setWaveType} style={{ width: '100%' }}
                         options={[
@@ -210,11 +210,11 @@ const MainLayout = () => {
                         ]}
                     />
                     <div style={{ marginTop: 12, padding: 12, background: isDarkMode ? '#333' : '#f5f5f5', borderRadius: 8 }}>
-                        <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>Test Interaction:</div>
+                        <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>{t('测试交互')}</div>
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                            <Button type="primary">Button</Button>
+                            <Button type="primary">{t('按钮')}</Button>
                             <Switch defaultChecked />
-                            <Checkbox>Check</Checkbox>
+                            <Checkbox>{t('勾选框')}</Checkbox>
                         </div>
                     </div>
                 </div>
@@ -222,16 +222,16 @@ const MainLayout = () => {
                 <Divider />
 
                 <div style={{ marginBottom: 24 }}>
-                    <h4>{t('settings.theme')}</h4>
+                    <h4>{t('侧边栏风格')}</h4>
                     <Radio.Group value={navTheme} onChange={(e) => setNavTheme(e.target.value)}>
-                        <Radio value="dark">Dark</Radio>
-                        <Radio value="light">Light</Radio>
+                        <Radio value="dark">{t('暗色')}</Radio>
+                        <Radio value="light">{t('亮色')}</Radio>
                     </Radio.Group>
                 </div>
 
                 {/* --- 3. 修改处：使用 ColorPicker --- */}
                 <div style={{ marginBottom: 24 }}>
-                    <h4>{t('settings.primaryColor')}</h4>
+                    <h4>{t('主题色')}</h4>
                     <ColorPicker
                         value={primaryColor}
                         onChange={(color) => setPrimaryColor(color.toHexString())} // 转换颜色对象为 Hex 字符串
@@ -242,20 +242,20 @@ const MainLayout = () => {
                 </div>
 
                 <div style={{ marginBottom: 24 }}>
-                    <h4>{t('settings.darkMode')}</h4>
+                    <h4>{t('全局暗黑模式')}</h4>
                     <Switch checked={isDarkMode} onChange={setIsDarkMode} />
                 </div>
             </Drawer>
 
-            <Modal title={t('user.password')} open={passwordModalOpen} onOk={() => passwordForm.submit()} onCancel={() => setPasswordModalOpen(false)}>
+            <Modal title={t('修改密码')} open={passwordModalOpen} onOk={() => passwordForm.submit()} onCancel={() => setPasswordModalOpen(false)}>
                 <Form form={passwordForm} layout="vertical" onFinish={handleChangePassword}>
-                    <Form.Item name="oldPassword" label="Old Password" rules={[{ required: true }]}>
+                    <Form.Item name="oldPassword" label={t('原密码')} rules={[{ required: true }]}>
                         <Input.Password />
                     </Form.Item>
-                    <Form.Item name="newPassword" label="New Password" rules={[{ required: true, min: 6 }]}>
+                    <Form.Item name="newPassword" label={t('新密码')} rules={[{ required: true, min: 6 }]}>
                         <Input.Password />
                     </Form.Item>
-                    <Form.Item name="confirmPassword" label="Confirm" dependencies={['newPassword']} rules={[{ required: true }, ({ getFieldValue }) => ({ validator(_, value) { if (!value || getFieldValue('newPassword') === value) return Promise.resolve(); return Promise.reject(new Error('Mismatch!')); }, }),]}>
+                    <Form.Item name="confirmPassword" label={t('确认新密码')} dependencies={['newPassword']} rules={[{ required: true }, ({ getFieldValue }) => ({ validator(_, value) { if (!value || getFieldValue('newPassword') === value) return Promise.resolve(); return Promise.reject(new Error(t('两次输入的密码不一致!'))); }, }),]}>
                         <Input.Password />
                     </Form.Item>
                 </Form>
