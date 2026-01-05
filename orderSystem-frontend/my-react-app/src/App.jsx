@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import PermissionSettings from './pages/PermissionSettings';
 import UserManagement from './pages/UserManagement';
 import OrderManagement from './pages/OrderManagement';
+import CustomerManagement from './pages/CustomerManagement';
 
 const PrivateRoute = ({ children }) => {
     const isAuth = localStorage.getItem('token');
@@ -32,6 +33,7 @@ const App = () => {
                         <Route path="system/permissions" element={<PermissionSettings />} />
                         <Route path="system/users" element={<UserManagement />} />
                         <Route path="orders" element={<OrderManagement />} />
+                        <Route path="customers" element={<CustomerManagement />} />
                     </Route>
 
                     <Route path="*" element={<Navigate to="/" />} />

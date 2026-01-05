@@ -10,7 +10,7 @@ import {
     DashboardOutlined, SettingOutlined, UserOutlined, ShoppingCartOutlined,
     LogoutOutlined, SkinOutlined, CheckOutlined, LockOutlined,
     SafetyCertificateOutlined, AppstoreOutlined,
-    ClockCircleOutlined, PoweroffOutlined, ReloadOutlined
+    ClockCircleOutlined, PoweroffOutlined, ReloadOutlined,TeamOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAppTheme } from '../context/ThemeContext';
@@ -224,6 +224,7 @@ const MainLayout = () => {
             ]
         },
         { key: '/orders', icon: <ShoppingCartOutlined />, label: t('menu.orders') },
+        { key: '/customers', icon: <TeamOutlined />, label: t('menu.customers')  },
     ];
 
     const breadcrumbNameMap = {
@@ -232,6 +233,7 @@ const MainLayout = () => {
         '/system/permissions': t('menu.permissions'),
         '/system/users': t('menu.users'),
         '/orders': t('menu.orders'),
+        '/customers': t('menu.customers'),
     };
 
     const [openKeys, setOpenKeys] = useState([]);
