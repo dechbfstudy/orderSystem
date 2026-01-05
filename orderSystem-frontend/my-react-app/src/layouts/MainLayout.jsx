@@ -220,10 +220,9 @@ const MainLayout = () => {
             label: t('menu.system'),
             children: [
                 { key: '/system/permissions', icon: <SafetyCertificateOutlined />, label: t('menu.permissions') },
-                { key: '/system/menus', icon: <AppstoreOutlined />, label: t('menu.menus') },
+                { key: '/system/users', icon: <UserOutlined />, label: t('menu.users') },
             ]
         },
-        { key: '/users', icon: <UserOutlined />, label: t('menu.users') },
         { key: '/orders', icon: <ShoppingCartOutlined />, label: t('menu.orders') },
     ];
 
@@ -231,8 +230,7 @@ const MainLayout = () => {
         '/dashboard': t('menu.dashboard'),
         '/system': t('menu.system'),
         '/system/permissions': t('menu.permissions'),
-        '/system/menus': t('menu.menus'),
-        '/users': t('menu.users'),
+        '/system/users': t('menu.users'),
         '/orders': t('menu.orders'),
     };
 

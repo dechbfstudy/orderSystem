@@ -7,7 +7,6 @@ import LoginPage from './pages/Login';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import PermissionSettings from './pages/PermissionSettings';
-import MenuManagement from './pages/MenuManagement';
 import UserManagement from './pages/UserManagement';
 import OrderManagement from './pages/OrderManagement';
 
@@ -31,8 +30,7 @@ const App = () => {
                         <Route index element={<Navigate to="/dashboard" replace />} />
                         <Route path="dashboard" element={<Home />} />
                         <Route path="system/permissions" element={<PermissionSettings />} />
-                        <Route path="system/menus" element={<MenuManagement />} />
-                        <Route path="users" element={<UserManagement />} />
+                        <Route path="system/users" element={<UserManagement />} />
                         <Route path="orders" element={<OrderManagement />} />
                     </Route>
 
