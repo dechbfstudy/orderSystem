@@ -10,7 +10,7 @@ import {
     DashboardOutlined, SettingOutlined, UserOutlined, ShoppingCartOutlined,
     LogoutOutlined, SkinOutlined, CheckOutlined, LockOutlined,
     SafetyCertificateOutlined, AppstoreOutlined,
-    ClockCircleOutlined, PoweroffOutlined, ReloadOutlined,TeamOutlined
+    ClockCircleOutlined, PoweroffOutlined, ReloadOutlined, TeamOutlined, GoldFilled
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAppTheme } from '../context/ThemeContext';
@@ -287,7 +287,7 @@ const MainLayout = () => {
                     textAlign: 'center', color: navTheme === 'dark' ? '#fff' : '#000',
                     lineHeight: '32px', fontWeight: 'bold', borderRadius: 6
                 }}>
-                    {collapsed ? 'Logo' : 'React Admin'}
+                    {collapsed ? <GoldFilled /> : 'Order System'}
                 </div>
                 <Menu
                     theme={navTheme}
