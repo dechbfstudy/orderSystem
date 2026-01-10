@@ -214,6 +214,8 @@ const MainLayout = () => {
 
     const menuItems = [
         { key: '/dashboard', icon: <DashboardOutlined />, label: t('menu.dashboard') },
+        { key: '/orders', icon: <ShoppingCartOutlined />, label: t('menu.orders') },
+        { key: '/customers', icon: <TeamOutlined />, label: t('menu.customers')  },
         {
             key: 'sub-system',
             icon: <SettingOutlined />,
@@ -223,8 +225,6 @@ const MainLayout = () => {
                 { key: '/system/users', icon: <UserOutlined />, label: t('menu.users') },
             ]
         },
-        { key: '/orders', icon: <ShoppingCartOutlined />, label: t('menu.orders') },
-        { key: '/customers', icon: <TeamOutlined />, label: t('menu.customers')  },
     ];
 
     const breadcrumbNameMap = {

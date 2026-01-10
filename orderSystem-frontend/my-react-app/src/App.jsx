@@ -30,10 +30,10 @@ const App = () => {
                     }>
                         <Route index element={<Navigate to="/dashboard" replace />} />
                         <Route path="dashboard" element={<Home />} />
-                        <Route path="system/permissions" element={<PermissionSettings />} />
-                        <Route path="system/users" element={<UserManagement />} />
                         <Route path="orders" element={<OrderManagement />} />
                         <Route path="customers" element={<CustomerManagement />} />
+                        <Route path="system/permissions" element={<PermissionSettings />} />
+                        <Route path="system/users" element={<UserManagement />} />
                     </Route>
 
                     <Route path="*" element={<Navigate to="/" />} />
