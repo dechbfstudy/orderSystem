@@ -19,11 +19,11 @@ import '../App.css';
 const { Header, Sider, Content } = Layout;
 
 // --- 配置常量 ---
-// const IDLE_TIMEOUT = 10 * 60 * 1000; // 10分钟
+const IDLE_TIMEOUT = 10 * 60 * 1000; // 10分钟
 const COUNTDOWN_DURATION = 5 * 60;   // 5分钟
 
 // 测试用 (5秒无操作触发，10秒倒计时)
-const IDLE_TIMEOUT = 5000;
+// const IDLE_TIMEOUT = 5000;
 // const COUNTDOWN_DURATION = 10;
 
 const PRESET_COLORS = [
