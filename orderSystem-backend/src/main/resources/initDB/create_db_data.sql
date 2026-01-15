@@ -115,9 +115,9 @@ CREATE TABLE DC_CUSTOMER_ADDRESS
 -- 3. 插入初始数据（密码使用加密存储）
 -- 注意：实际应用中应该使用更强的哈希算法，这里仅作示例
 INSERT INTO DC_USER (USERNAME, USER_ACCOUNT, PASSWORD, CREATE_TIME, IS_DISABLED)
-VALUES ('admin', 'admin', 'admin123', NOW(), 0),
-       ('test', 'test', 'test123', NOW(), 0),
-       ('guest', 'guest', 'guest123', NOW(), 1); -- 禁用账户示例
+VALUES ('admin', 'admin', '$argon2id$v=19$m=16384,t=2,p=1$FvNNU0W62b5AMKSRMY1v5Q$LhFzsWCP7M1wALDwLa4jteuMjbrB/ect/6CI7mFHzEI', NOW(), 0),
+       ('test', 'test', '$argon2id$v=19$m=16384,t=2,p=1$dFXvvL470dPInlVIsjWaXQ$HR9SY5X+TuxuSoLGfm1atp1L6QbwXGDHoZ+ti/OjYaE', NOW(), 0),
+       ('guest', 'guest', '$argon2id$v=19$m=16384,t=2,p=1$JEK/gRCcflpOQi7tQME+sA$MrKRJZ+dnmhTe8Wg+khdoZHEJHo17FfJLgIDzg0WMAU', NOW(), 1); -- 禁用账户示例
 
 COMMIT;
 
