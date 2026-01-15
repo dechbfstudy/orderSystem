@@ -11,9 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class DcUser {
     private Integer userId;
     private String username;
+    private String userAccount;
     private String password;
     private LocalDateTime createTime;
     private Boolean isDisabled;

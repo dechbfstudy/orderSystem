@@ -1,6 +1,18 @@
 spring:
   application:
     name: orderSystem
+  datasource:
+    url: jdbc:mysql://localhost:3306/ordersystem?useSSL=false&serverTimezone=UTC
+    username: root
+    password: dianchong888
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
 jwt:
   secret: dianchong888666
   expiration: 3600
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true

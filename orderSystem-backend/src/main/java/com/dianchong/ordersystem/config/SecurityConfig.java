@@ -1,84 +1,69 @@
 package com.dianchong.ordersystem.config;
 
 import com.dianchong.ordersystem.filter.JwtAuthenticationFilter;
-import com.dianchong.ordersystem.untils.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig() {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, UserDetailsService userDetailsService) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.userDetailsService = userDetailsService;
     }
 
-    // 1. 模拟数据库中的用户（实际开发中应实现 UserDetailsService 从数据库加载）
+    // 1. 配置 Argon2 加密器 (关键!)
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("123456")) // 密码必须加密
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
+    public static PasswordEncoder passwordEncoder() {
+        // 参数: saltLength=16, hashLength=32, parallelism=1, memory=16384(16MB), iterations=2
+        return new Argon2PasswordEncoder(16, 32, 1, 16384, 2);
     }
 
-    // JwtAuthenticationFilter bean created with required dependencies to avoid circular refs
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
-        return new JwtAuthenticationFilter(jwtUtil, userDetailsService);
-    }
-
-    // 2. 配置安全过滤链
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable) // 禁用 CSRF
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll() // 允许登录接口匿名访问
-                        .anyRequest().authenticated()               // 其他所有接口需要认证
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 设置为无状态（不使用 Session）
-                )
-                .authenticationProvider(authenticationProvider()) // 指定认证提供者
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // 添加 JWT 过滤器
-
-        return http.build();
-    }
-
+    // 2. 配置认证提供者
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
+    // 3. 暴露 AuthenticationManager 给 Controller 使用
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    // 4. 配置 HTTP 安全链
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable()) // 禁用 CSRF (前后端分离不需要)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/login").permitAll() // 放行登录接口
+                        .anyRequest().authenticated() // 其他接口需认证
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 禁用 Session
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
+    }
 }

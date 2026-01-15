@@ -1,63 +1,55 @@
 package com.dianchong.ordersystem.filter;
 
-import com.dianchong.ordersystem.untils.JwtUtil;
+import com.dianchong.ordersystem.service.impl.UserDetailsServiceImpl;
+import com.dianchong.ordersystem.untils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
-
-    private final UserDetailsService userDetailsService;
-
-    // Constructor injection to avoid circular @Autowired dependencies
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
-        this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
-    }
+    @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String username;
+        final String authHeader = request.getHeader("Authorization");
+        String username = null;
+        String jwt = null;
 
-        //检查 header 是否存在且以 Bearer 开头
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        //截取 token
-        jwt = authorizationHeader.substring(7);
-        username = jwtUtil.extractUsername(jwt);
-        //如果 token 有效且当前 context 中没有认证信息
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //加载用户信息（check db）
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            //验证 token
-            if (jwtUtil.isTokenValid(jwt, userDetails)) {
-                //创建 authentication 对象并存入 securityContext
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-                authentication.setDetails(authentication.getDetails());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+            try {
+                username = jwtUtils.extractUserAccount(jwt);
+            } catch (Exception e) {
+                // Token 无效或过期
             }
         }
-        filterChain.doFilter(request, response);
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            if (jwtUtils.validateToken(jwt, userDetails.getUsername())) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+        chain.doFilter(request, response);
     }
 }
