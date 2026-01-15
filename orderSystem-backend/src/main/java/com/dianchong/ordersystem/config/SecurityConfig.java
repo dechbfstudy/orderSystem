@@ -55,7 +55,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // 禁用 CSRF (前后端分离不需要)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login","/hello").permitAll() // 放行登录接口
+                        .requestMatchers("/auth/login", "/auth/refresh","/hello").permitAll() // 放行登录接口
                         .anyRequest().authenticated() // 其他接口需认证
                 )
                 .sessionManagement(session -> session
