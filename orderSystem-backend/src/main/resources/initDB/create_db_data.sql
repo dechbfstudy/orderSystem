@@ -26,7 +26,7 @@ CREATE TABLE DC_USER
     USER_ACCOUNT    VARCHAR(50)  NOT NULL COMMENT '用户账号',
     PASSWORD        VARCHAR(255) NOT NULL COMMENT '密码（加密存储）',
     CREATE_TIME     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    IS_DISABLED     TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否禁用：0-正常，1-禁用',
+    IS_DISABLED     TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否禁用：0-禁用，1-正常',
     LAST_LOGIN_TIME DATETIME NULL COMMENT '最后登录时间',
     LOGIN_COUNT     INT          NOT NULL DEFAULT 0 COMMENT '登录次数',
 
@@ -115,9 +115,9 @@ CREATE TABLE DC_CUSTOMER_ADDRESS
 -- 3. 插入初始数据（密码使用加密存储）
 -- 注意：实际应用中应该使用更强的哈希算法，这里仅作示例
 INSERT INTO DC_USER (USERNAME, USER_ACCOUNT, PASSWORD, CREATE_TIME, IS_DISABLED)
-VALUES ('admin', 'admin', '$argon2id$v=19$m=16384,t=2,p=1$FvNNU0W62b5AMKSRMY1v5Q$LhFzsWCP7M1wALDwLa4jteuMjbrB/ect/6CI7mFHzEI', NOW(), 0),
-       ('test', 'test', '$argon2id$v=19$m=16384,t=2,p=1$dFXvvL470dPInlVIsjWaXQ$HR9SY5X+TuxuSoLGfm1atp1L6QbwXGDHoZ+ti/OjYaE', NOW(), 0),
-       ('guest', 'guest', '$argon2id$v=19$m=16384,t=2,p=1$JEK/gRCcflpOQi7tQME+sA$MrKRJZ+dnmhTe8Wg+khdoZHEJHo17FfJLgIDzg0WMAU', NOW(), 1); -- 禁用账户示例
+VALUES ('admin', 'admin', '$argon2id$v=19$m=16384,t=2,p=1$FvNNU0W62b5AMKSRMY1v5Q$LhFzsWCP7M1wALDwLa4jteuMjbrB/ect/6CI7mFHzEI', NOW(), 1),
+       ('test', 'test', '$argon2id$v=19$m=16384,t=2,p=1$dFXvvL470dPInlVIsjWaXQ$HR9SY5X+TuxuSoLGfm1atp1L6QbwXGDHoZ+ti/OjYaE', NOW(), 1),
+       ('guest', 'guest', '$argon2id$v=19$m=16384,t=2,p=1$JEK/gRCcflpOQi7tQME+sA$MrKRJZ+dnmhTe8Wg+khdoZHEJHo17FfJLgIDzg0WMAU', NOW(), 0); -- 禁用账户示例
 
 COMMIT;
 
