@@ -12,5 +12,5 @@ public interface DcUserMapper {
 
     DcUser queryByAccount(String account);
 
-    void updateLoginInfo(BigDecimal userId);
+    void updateLoginInfo(String account);
 }

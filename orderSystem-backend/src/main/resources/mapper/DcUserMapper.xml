@@ -13,4 +13,11 @@
             USER_ACCOUNT = #{account}
         </where>
     </select>
+
+    <update id="updateLoginInfo" parameterType="java.lang.String">
+        UPDATE dc_user SET
+            last_login_time = NOW(),
+            login_count = COALESCE(login_count, 0) + 1
+        WHERE USER_ACCOUNT = #{account}
+    </update>
 </mapper>

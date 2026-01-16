@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
         String userAccount = authentication.getName();
 
         // 3. 更新数据库登录信息
-//        userMapper.updateLoginInfo(userAccount);
+        userMapper.updateLoginInfo(userAccount);
 
         // 4. 生成双 Token
         String accessToken = jwtUtils.generateAccessToken(userAccount);
