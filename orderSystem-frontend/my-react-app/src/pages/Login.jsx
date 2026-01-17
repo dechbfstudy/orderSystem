@@ -5,7 +5,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppTheme } from '../context/ThemeContext';
 import { login } from '../api/auth';
-import {setTokens} from "../utils/storage.js";
+import {setTokens, setUserInfo} from "../utils/storage.js";
 
 
 const LoginPage = () => {
@@ -28,11 +28,10 @@ const LoginPage = () => {
         try{
             const res = await login(values);
 
-            // 注意：根据 request.js 的拦截器，res 已经是 response.data 了
-            // 后端返回结构: { accessToken: '...', refreshToken: '...' }
-            const { accessToken, refreshToken } = res;
+            const { accessToken, refreshToken,username } = res;
 
             setTokens(accessToken, refreshToken, values.rememberMe);
+            setUserInfo({username: username}, values.rememberMe);
 
             message.success(t('登录成功！'));
             navigate('/dashboard');

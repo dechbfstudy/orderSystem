@@ -3,6 +3,7 @@ package com.dianchong.ordersystem.service.impl;
 import com.dianchong.ordersystem.dto.TokenResponse;
 import com.dianchong.ordersystem.entity.DcUser;
 import com.dianchong.ordersystem.mapper.DcUserMapper;
+import com.dianchong.ordersystem.security.LoginUser;
 import com.dianchong.ordersystem.service.AuthService;
 import com.dianchong.ordersystem.untils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,11 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(account, password)
         );
 
-        // 2. 认证成功，获取用户名
-        String userAccount = authentication.getName();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+
+        // 2. 认证成功，获取用户账号 和 用户名
+        String userAccount = loginUser.getUserAccount();
+        String username = loginUser.getUsername();
 
         // 3. 更新数据库登录信息
         userMapper.updateLoginInfo(userAccount);
@@ -48,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
             refreshToken = jwtUtils.generateRefreshToken(userAccount, refreshExpiration);
         }
 
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokenResponse(accessToken, refreshToken, username);
     }
 
     @Override
@@ -80,6 +84,6 @@ public class AuthServiceImpl implements AuthService {
         // 策略 A: Refresh Token 保持不变 (直到7天过期)，实现简单。
         // 策略 B: 每次刷新也发新的 Refresh Token (更安全，但前端并发处理稍微麻烦点)。
         // 这里演示策略 A，只返回新的 AccessToken，RefreshToken 原样返回或返回 null 让前端复用
-        return new TokenResponse(newAccessToken, refreshToken);
+        return new TokenResponse(newAccessToken, refreshToken, user.getUsername());
     }
 }

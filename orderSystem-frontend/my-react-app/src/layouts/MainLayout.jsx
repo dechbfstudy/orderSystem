@@ -41,7 +41,7 @@ import {
 import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom';
 import {useAppTheme} from '../context/ThemeContext';
 import '../App.css';
-import {clearTokens} from "../utils/storage.js";
+import {clearStorage, getUserInfo} from "../utils/storage.js";
 
 const { Header, Sider, Content } = Layout;
 
@@ -65,7 +65,7 @@ const PRESET_COLORS = [
 ];
 
 // ==========================================
-// 1. 美化后的顶部倒计时组件
+// 无操作倒计时组件
 // ==========================================
 const IdleWarningModal = ({ open, onLogout, onContinue, initialDuration }) => {
     const [countdown, setCountdown] = useState(initialDuration);
@@ -172,7 +172,7 @@ const IdleWarningModal = ({ open, onLogout, onContinue, initialDuration }) => {
 };
 
 // ==========================================
-// 2. MainLayout 主组件
+// MainLayout 主组件
 // ==========================================
 const MainLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -197,11 +197,19 @@ const MainLayout = () => {
     // --- 空闲检测逻辑 ---
     const [idleModalOpen, setIdleModalOpen] = useState(false);
     const idleTimerRef = useRef(null);
+    const [userInfo, setUserInfo] = useState({ username: '访客' });
+
+    useEffect(() => {
+        const storedUserInfo = getUserInfo();
+        if (storedUserInfo) {
+            setUserInfo(storedUserInfo);
+        }
+    }, []);
 
     const handleLogout = useCallback(() => {
         clearTimeout(idleTimerRef.current);
         // 清除正确的 token
-        clearTokens();
+        clearStorage();
         message.success(t('user.logout'));
         navigate('/login');
     }, [navigate, t]);
@@ -341,7 +349,7 @@ const MainLayout = () => {
                         <Dropdown menu={userMenuTokens}>
               <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                 <Avatar style={{ backgroundColor: primaryColor }} icon={<UserOutlined />} />
-                <span style={{ marginLeft: 8 }}>{t('user.admin')}</span>
+                <span style={{ marginLeft: 8 }}>{userInfo.username}</span>
               </span>
                         </Dropdown>
                     </div>
@@ -431,7 +439,6 @@ const MainLayout = () => {
                 </Form>
             </Modal>
 
-            {/* 3. 使用美化后的顶部倒计时组件 */}
             <IdleWarningModal
                 open={idleModalOpen}
                 onLogout={handleLogout}

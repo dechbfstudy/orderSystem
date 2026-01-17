@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {clearTokens, getAccessToken, getRefreshToken, isRememberMe, setTokens} from "./storage.js";
+import {clearStorage, getAccessToken, getRefreshToken, isRememberMe, setTokens} from "./storage.js";
 
 const service = axios.create({
     baseURL: 'http://localhost:8080',
@@ -75,7 +75,7 @@ service.interceptors.response.use(
             } catch (refreshError) {
                 requestsQueue = [];
                 // 清除所有 Token
-                clearTokens();
+                clearStorage();
                 const currentPath = window.location.pathname;
                 if (currentPath !== '/login') {
                     window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;

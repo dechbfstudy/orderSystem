@@ -1,7 +1,6 @@
-// src/utils/storage.js
-
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
+const USER_INFO_KEY = 'userInfo';
 
 /**
  * 判断当前是否处于“记住我”状态
@@ -34,6 +33,22 @@ export function setTokens(accessToken, refreshToken, rememberMe) {
 }
 
 /**
+ * 保存用户信息
+ * @param {Object} userObj 用户对象 { nickname: '张三', username: 'admin' }
+ * @param {boolean} rememberMe 是否记住我
+ */
+export function setUserInfo(userObj, rememberMe) {
+    const userStr = JSON.stringify(userObj); // 转成字符串存储
+    if (rememberMe) {
+        localStorage.setItem(USER_INFO_KEY, userStr);
+        sessionStorage.removeItem(USER_INFO_KEY);
+    } else {
+        sessionStorage.setItem(USER_INFO_KEY, userStr);
+        localStorage.removeItem(USER_INFO_KEY);
+    }
+}
+
+/**
  * 获取 AccessToken (优先找 session，再找 local)
  */
 export function getAccessToken() {
@@ -48,11 +63,23 @@ export function getRefreshToken() {
 }
 
 /**
+ * 获取用户信息
+ * @returns {Object|null} 返回对象或 null
+ */
+export function getUserInfo() {
+    const userStr = localStorage.getItem(USER_INFO_KEY) || sessionStorage.getItem(USER_INFO_KEY);
+    return userStr ? JSON.parse(userStr) : null;
+}
+
+/**
  * 清除所有 Token (登出时调用)
  */
-export function clearTokens() {
+export function clearStorage() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(USER_INFO_KEY);
+
     sessionStorage.removeItem(ACCESS_TOKEN_KEY);
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(USER_INFO_KEY);
 }

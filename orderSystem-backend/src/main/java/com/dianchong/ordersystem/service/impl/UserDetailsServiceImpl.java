@@ -2,6 +2,7 @@ package com.dianchong.ordersystem.service.impl;
 
 import com.dianchong.ordersystem.entity.DcUser;
 import com.dianchong.ordersystem.mapper.DcUserMapper;
+import com.dianchong.ordersystem.security.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,13 +25,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("用户不存在");
         }
 
-        return new User(user.getUserAccount(),
-                user.getPassword(),
-                user.getIsDisabled(),
-                true, // accountNonExpired
-                true, // credentialsNonExpired
-                true, // accountNonLocked
-                new ArrayList<>() // 权限列表，后续可结合角色表查询填充
+        //查询权限
+
+        return new LoginUser(user,
+                new ArrayList<>()
                 );
     }
 }
