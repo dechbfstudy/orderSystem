@@ -249,27 +249,27 @@ const MainLayout = () => {
     ];
 
     const menuItems = [
-        { key: '/dashboard', icon: <DashboardOutlined />, label: t('menu.dashboard') },
-        { key: '/orders', icon: <ShoppingCartOutlined />, label: t('menu.orders') },
-        { key: '/customers', icon: <TeamOutlined />, label: t('menu.customers')  },
+        { key: '/dashboard', icon: <DashboardOutlined />, label: t('主页') },
+        { key: '/orders', icon: <ShoppingCartOutlined />, label: t('订单管理') },
+        { key: '/customers', icon: <TeamOutlined />, label: t('客户管理')  },
         {
             key: 'sub-system',
             icon: <SettingOutlined />,
-            label: t('menu.system'),
+            label: t('系统设置'),
             children: [
-                { key: '/system/permissions', icon: <SafetyCertificateOutlined />, label: t('menu.permissions') },
-                { key: '/system/users', icon: <UserOutlined />, label: t('menu.users') },
+                { key: '/system/permissions', icon: <SafetyCertificateOutlined />, label: t('权限设置') },
+                { key: '/system/users', icon: <UserOutlined />, label: t('用户管理') },
             ]
         },
     ];
 
     const breadcrumbNameMap = {
-        '/dashboard': t('menu.dashboard'),
-        '/system': t('menu.system'),
-        '/system/permissions': t('menu.permissions'),
-        '/system/users': t('menu.users'),
-        '/orders': t('menu.orders'),
-        '/customers': t('menu.customers'),
+        '/dashboard': t('主页'),
+        '/system': t('系统设置'),
+        '/system/permissions': t('权限设置'),
+        '/system/users': t('用户管理'),
+        '/orders': t('订单管理'),
+        '/customers': t('客户管理'),
     };
 
     const [openKeys, setOpenKeys] = useState([]);
@@ -300,7 +300,7 @@ const MainLayout = () => {
 
     const pathSnippets = location.pathname.split('/').filter((i) => i);
     const breadcrumbItems = [
-        { title: <Link to="/dashboard">{t('menu.dashboard')}</Link>, key: 'home' },
+        { title: <Link to="/dashboard">{t('主页')}</Link>, key: 'home' },
     ];
     pathSnippets.forEach((_, index) => {
         const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;

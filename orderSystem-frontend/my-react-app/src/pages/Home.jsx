@@ -96,7 +96,7 @@ const Home = () => {
         <div>
             {/* 1. 顶部统计卡片区域 */}
             <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12} lg={6}>
+                <Col xs={24} sm={12} lg={8}>
                     <StatCard
                         title="总销售额"
                         value={126560}
@@ -106,7 +106,7 @@ const Home = () => {
                         suffix={<span style={{ color: '#cf1322' }}><ArrowUpOutlined /> 12%</span>}
                     />
                 </Col>
-                <Col xs={24} sm={12} lg={6}>
+                <Col xs={24} sm={12} lg={8}>
                     <StatCard
                         title="总订单量"
                         value={8846}
@@ -116,17 +116,7 @@ const Home = () => {
                         suffix={<span style={{ color: '#3f8600' }}><ArrowUpOutlined /> 5%</span>}
                     />
                 </Col>
-                <Col xs={24} sm={12} lg={6}>
-                    <StatCard
-                        title="注册用户"
-                        value={1234}
-                        prefix=""
-                        color="#722ed1"
-                        icon={<UserOutlined style={{ fontSize: 24 }} />}
-                        suffix={<span style={{ color: '#cf1322' }}><ArrowDownOutlined /> 2%</span>}
-                    />
-                </Col>
-                <Col xs={24} sm={12} lg={6}>
+                <Col xs={24} sm={12} lg={8}>
                     <StatCard
                         title="合作客户"
                         value={87}
@@ -204,7 +194,7 @@ const Home = () => {
             {/* 3. 底部图表区域：用户增长 + 最新交易 */}
             <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
                 <Col xs={24} lg={12}>
-                    <Card title="用户与客户增长对比" bordered={false} style={{ height: '100%' }}>
+                    <Card title="客户增长对比" bordered={false} style={{ height: '100%' }}>
                         <div style={{ width: '100%', height: 300 }}>
                             <ResponsiveContainer>
                                 <BarChart data={GROWTH_DATA}>
@@ -213,7 +203,6 @@ const Home = () => {
                                     <YAxis stroke={chartTextColor} />
                                     <Tooltip cursor={{ fill: isDarkMode ? '#ffffff10' : '#f0f0f0' }} />
                                     <Legend />
-                                    <Bar dataKey="newUsers" name="新增注册用户" fill={primaryColor} radius={[4, 4, 0, 0]} />
                                     <Bar dataKey="newCustomers" name="新增合作客户" fill="#ffc658" radius={[4, 4, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>

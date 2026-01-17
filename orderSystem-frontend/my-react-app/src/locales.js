@@ -9,12 +9,13 @@ export const enTranslations = {
     // --- 菜单 ---
     '主页': 'Dashboard',
     '系统设置': 'System Settings',
-    '权限设置': 'Permissions',
+    '权限设置': 'Permissions Settings',
     '菜单管理': 'Menu Management',
     '用户管理': 'User Management',
     '订单管理': 'Order Management',
+    '客户管理': 'Customers Management',
 
-    // --- 设置抽屉 ---
+    // --- 设置抽屉 ---1
     '个性化设置': 'Personalization',
     '语言设置': 'Language',
     '侧边栏风格': 'Sidebar Style',

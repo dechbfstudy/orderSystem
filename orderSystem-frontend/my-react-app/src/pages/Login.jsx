@@ -16,13 +16,6 @@ const LoginPage = () => {
     const handleLogin = async (values) => {
         console.log('Login values:', values)
         setLoading(true);
-        // 前端模拟登录，实际项目请使用接口
-        // setTimeout(() => {
-        //     localStorage.setItem('token', 'dummy-token');
-        //     message.success(t('登录成功！'));
-        //     setLoading(false);
-        //     navigate('/dashboard');
-        // }, 800);
 
         //调用登录接口
         try{
