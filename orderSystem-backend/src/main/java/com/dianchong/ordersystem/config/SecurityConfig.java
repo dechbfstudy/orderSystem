@@ -15,17 +15,24 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final CorsProperties corsProperties;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, UserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
+                          UserDetailsService userDetailsService,
+                          CorsProperties corsProperties) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userDetailsService = userDetailsService;
+        this.corsProperties = corsProperties;
     }
 
     // 1. 配置 Argon2 加密器 (关键!)
@@ -53,6 +60,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable()) // 禁用 CSRF (前后端分离不需要)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -72,5 +80,28 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * 4. 动态读取 YAML 配置生成 CORS 规则
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 从 YAML 读取域名列表
+        configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+        // 从 YAML 读取方法列表
+        configuration.setAllowedMethods(corsProperties.getAllowedMethods());
+        // 从 YAML 读取请求头
+        configuration.setAllowedHeaders(corsProperties.getAllowedHeaders());
+        // 从 YAML 读取暴露头
+        configuration.setExposedHeaders(corsProperties.getExposedHeaders());
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(corsProperties.getPathPattern(), configuration);
+        return source;
     }
 }

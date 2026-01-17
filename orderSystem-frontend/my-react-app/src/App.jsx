@@ -1,8 +1,7 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from './context/ThemeContext'; // 确保路径正确
-
+import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
+import {ThemeProvider} from './context/ThemeContext'; // 确保路径正确
 import LoginPage from './pages/Login';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
@@ -10,10 +9,10 @@ import PermissionSettings from './pages/PermissionSettings';
 import UserManagement from './pages/UserManagement';
 import OrderManagement from './pages/OrderManagement';
 import CustomerManagement from './pages/CustomerManagement';
+import {getAccessToken, getRefreshToken} from "./utils/storage.js";
 
 const PrivateRoute = ({ children }) => {
-    const isAuth = localStorage.getItem('token');
-    return isAuth ? children : <Navigate to="/login" />;
+    return getAccessToken() && getRefreshToken() ? children : <Navigate to="/login" />;
 };
 
 const App = () => {

@@ -26,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private DcUserMapper userMapper;
 
     @Override
-    public TokenResponse login(String account, String password) {
+    public TokenResponse login(String account, String password, Boolean rememberMe) {
         // 1. Spring Security 认证 (Argon2 校验)
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(account, password)
@@ -40,7 +40,13 @@ public class AuthServiceImpl implements AuthService {
 
         // 4. 生成双 Token
         String accessToken = jwtUtils.generateAccessToken(userAccount);
+
         String refreshToken = jwtUtils.generateRefreshToken(userAccount);
+        if (Boolean.FALSE.equals(rememberMe)){
+            // 否则：默认 1天
+            long refreshExpiration = 86400000L;
+            refreshToken = jwtUtils.generateRefreshToken(userAccount, refreshExpiration);
+        }
 
         return new TokenResponse(accessToken, refreshToken);
     }

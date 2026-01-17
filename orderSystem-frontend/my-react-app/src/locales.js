@@ -61,6 +61,7 @@ export const enTranslations = {
 
     // --- 提示 ---
     '登录成功！': 'Login successful!',
+    '登录失败！用户名或密码错误！': 'Login failed! Incorrect username or password!',
     '密码修改成功，请重新登录': 'Password changed successfully, please login again.',
     '退出成功！': 'Logout successful!'
 };

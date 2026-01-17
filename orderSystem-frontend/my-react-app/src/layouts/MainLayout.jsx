@@ -1,20 +1,47 @@
 // src/layouts/MainLayout.jsx
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-    Layout, Menu, Button, theme, Avatar, Dropdown, Breadcrumb,
-    Drawer, Switch, Divider, Tooltip, Radio, Modal, Form, Input, message,
-    Segmented, Select, Checkbox, ColorPicker, Progress, Statistic
+    Avatar,
+    Breadcrumb,
+    Button,
+    Checkbox,
+    ColorPicker,
+    Drawer,
+    Dropdown,
+    Form,
+    Input,
+    Layout,
+    Menu,
+    message,
+    Modal,
+    Progress,
+    Radio,
+    Segmented,
+    Select,
+    Switch,
+    theme
 } from 'antd';
 import {
-    MenuFoldOutlined, MenuUnfoldOutlined,
-    DashboardOutlined, SettingOutlined, UserOutlined, ShoppingCartOutlined,
-    LogoutOutlined, SkinOutlined, CheckOutlined, LockOutlined,
-    SafetyCertificateOutlined, AppstoreOutlined,
-    ClockCircleOutlined, PoweroffOutlined, ReloadOutlined, TeamOutlined, GoldFilled
+    ClockCircleOutlined,
+    DashboardOutlined,
+    GoldFilled,
+    LockOutlined,
+    LogoutOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    PoweroffOutlined,
+    ReloadOutlined,
+    SafetyCertificateOutlined,
+    SettingOutlined,
+    ShoppingCartOutlined,
+    SkinOutlined,
+    TeamOutlined,
+    UserOutlined
 } from '@ant-design/icons';
-import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
-import { useAppTheme } from '../context/ThemeContext';
+import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom';
+import {useAppTheme} from '../context/ThemeContext';
 import '../App.css';
+import {clearTokens} from "../utils/storage.js";
 
 const { Header, Sider, Content } = Layout;
 
@@ -173,7 +200,8 @@ const MainLayout = () => {
 
     const handleLogout = useCallback(() => {
         clearTimeout(idleTimerRef.current);
-        localStorage.removeItem('token');
+        // 清除正确的 token
+        clearTokens();
         message.success(t('user.logout'));
         navigate('/login');
     }, [navigate, t]);

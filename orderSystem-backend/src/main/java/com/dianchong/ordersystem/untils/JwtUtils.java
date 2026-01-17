@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -15,16 +17,21 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
-    // 生产环境请务必放入 application.yml
-    private static final String SECRET = "YourVerySecretKeyForJwtSigningMustBeLongEnough1234567890";
+    @Value("${jwt.secret}")
+    private String SECRET;
 
-    // Access Token 过期时间：10分钟
-    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 10;
+    @Value("${jwt.access-token-validity}")
+    private long ACCESS_TOKEN_EXPIRATION;
 
-    // Refresh Token 过期时间：7天
-    private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
+    @Value("${jwt.refresh-token-validity}")
+    private long REFRESH_TOKEN_EXPIRATION;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    }
 
     // 1. 生成 Access Token (短效)
     public String generateAccessToken(String username) {
@@ -33,13 +40,22 @@ public class JwtUtils {
 
     // 2. 生成 Refresh Token (长效)
     public String generateRefreshToken(String username) {
-        return buildToken(new HashMap<>(), username, REFRESH_TOKEN_EXPIRATION);
+        return generateRefreshToken(username, REFRESH_TOKEN_EXPIRATION);
     }
 
     private String buildToken(Map<String, Object> claims, String subject, long expiration) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(String username, long expiration) {
+        return Jwts.builder()
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
