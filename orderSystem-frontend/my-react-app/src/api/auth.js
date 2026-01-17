@@ -2,11 +2,11 @@
 
 // 定义接口路径
 import request from "../utils/request.js";
+import {data} from "react-router-dom";
 
 const API_URL = {
     LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout', // 如果你有做后端登出
-    USER_INFO: '/user/info' // 示例业务接口
+    ROLE_LIST: '/system/role-permissions/list',
 };
 
 /**
@@ -22,21 +22,12 @@ export function login(data) {
 }
 
 /**
- * 获取用户信息 (会自动带 Token)
+ * 获取角色列表 (会自动带 Token)
  */
-export function getUserInfo() {
+export function getRoleList(data) {
     return request({
-        url: API_URL.USER_INFO,
-        method: 'get'
+        url: API_URL.ROLE_LIST,
+        method: 'get',
+        params: data
     });
-}
-
-/**
- * 登出 (清除本地缓存)
- * 建议在组件里调用这个后，手动清除 localStorage 并跳转
- */
-export function logout() {
-    // 仅作演示，如果后端没登出接口，前端直接清缓存即可
-    // return request({ url: API_URL.LOGOUT, method: 'post' });
-    return Promise.resolve();
 }

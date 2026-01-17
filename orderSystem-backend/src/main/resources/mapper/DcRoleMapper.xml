@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianchong.ordersystem.mapper.DcRoleMapper">
+    <select id="queryByRoleName" resultType="com.dianchong.ordersystem.entity.DcRole">
+        select * from dc_role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                ROLE_NAME like CONCAT ('%', #{roleName}, '%')
+            </if>
+        </where>
+        order by CREATE_TIME desc
+    </select>
+</mapper>

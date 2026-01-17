@@ -12,6 +12,8 @@ import {
     SafetyCertificateOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import {getRoleList, login} from "../api/auth.js";
+import {setTokens, setUserInfo} from "../utils/storage.js";
 
 // ==========================================
 // 1. 模拟数据定义
@@ -72,36 +74,36 @@ const PERMISSION_TREE_DATA = [
 ];
 
 // 模拟角色列表数据
-const MOCK_ROLES = [
-    {
-        key: 1,
-        roleName: '超级管理员',
-        description: '拥有系统所有权限',
-        createTime: '2023-01-01 10:00:00',
-        updateTime: '2023-05-20 14:00:00',
-        status: true,
-        // 假设拥有所有权限 keys
-        permissions: ['dashboard', 'dashboard:view', 'system', 'system:permission', 'perm:view', 'perm:add', 'perm:edit', 'system:menu', 'menu:view', 'menu:edit', 'users', 'user:view', 'user:edit', 'user:reset', 'user:status', 'orders', 'order:view', 'order:add', 'order:audit', 'order:print']
-    },
-    {
-        key: 2,
-        roleName: '运营专员',
-        description: '负责订单处理和用户查看',
-        createTime: '2023-02-15 09:30:00',
-        updateTime: '2023-06-10 11:20:00',
-        status: true,
-        permissions: ['dashboard', 'dashboard:view', 'users', 'user:view', 'orders', 'order:view', 'order:add', 'order:print']
-    },
-    {
-        key: 3,
-        roleName: '审计员',
-        description: '只读权限，用于财务审计',
-        createTime: '2023-03-10 16:00:00',
-        updateTime: '2023-03-10 16:00:00',
-        status: false,
-        permissions: ['dashboard', 'dashboard:view', 'users', 'user:view', 'orders', 'order:view']
-    }
-];
+// const MOCK_ROLES = [
+//     {
+//         key: 1,
+//         roleName: '超级管理员',
+//         remark: '拥有系统所有权限',
+//         createTime: '2023-01-01 10:00:00',
+//         updateTime: '2023-05-20 14:00:00',
+//         status: true,
+//         // 假设拥有所有权限 keys
+//         permissions: ['dashboard', 'dashboard:view', 'system', 'system:permission', 'perm:view', 'perm:add', 'perm:edit', 'system:menu', 'menu:view', 'menu:edit', 'users', 'user:view', 'user:edit', 'user:reset', 'user:status', 'orders', 'order:view', 'order:add', 'order:audit', 'order:print']
+//     },
+//     {
+//         key: 2,
+//         roleName: '运营专员',
+//         remark: '负责订单处理和用户查看',
+//         createTime: '2023-02-15 09:30:00',
+//         updateTime: '2023-06-10 11:20:00',
+//         status: true,
+//         permissions: ['dashboard', 'dashboard:view', 'users', 'user:view', 'orders', 'order:view', 'order:add', 'order:print']
+//     },
+//     {
+//         key: 3,
+//         roleName: '审计员',
+//         remark: '只读权限，用于财务审计',
+//         createTime: '2023-03-10 16:00:00',
+//         updateTime: '2023-03-10 16:00:00',
+//         status: false,
+//         permissions: ['dashboard', 'dashboard:view', 'users', 'user:view', 'orders', 'order:view']
+//     }
+// ];
 
 const PermissionSettings = () => {
     const [searchForm] = Form.useForm();
@@ -126,20 +128,31 @@ const PermissionSettings = () => {
     }, []);
 
     // 1. 数据查询
-    const fetchData = (params = {}) => {
+    const fetchData = async (params = {}) => {
         setLoading(true);
-        setTimeout(() => {
-            let filtered = [...MOCK_ROLES];
-            if (params.roleName) {
-                filtered = filtered.filter(item => item.roleName.includes(params.roleName));
-            }
-            setData(filtered);
+
+        try{
+            const res = await getRoleList(params);
+            setData(res);
+        }  catch (error) {
+            console.error('获取角色列表失败', error);
+            message.error('获取角色列表失败');
+        } finally {
             setLoading(false);
-        }, 500);
+        }
+
+        // setTimeout(() => {
+        //     let filtered = [...MOCK_ROLES];
+        //     if (params.roleName) {
+        //         filtered = filtered.filter(item => item.roleName.includes(params.roleName));
+        //     }
+        //     setData(filtered);
+        //     setLoading(false);
+        // }, 500);
     };
 
     const handleSearch = () => {
-        fetchData(searchForm.getFieldsValue());
+        fetchData(searchForm.getFieldsValue()).then(r => {});
     };
 
     const handleReset = () => {
@@ -244,8 +257,8 @@ const PermissionSettings = () => {
         },
         {
             title: '描述',
-            dataIndex: 'description',
-            key: 'description',
+            dataIndex: 'remark',
+            key: 'remark',
             ellipsis: true,
         },
         {
@@ -253,12 +266,18 @@ const PermissionSettings = () => {
             dataIndex: 'createTime',
             key: 'createTime',
             width: 170,
+            render: (text) => {
+                return text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '-';
+            }
         },
         {
             title: '修改时间',
             dataIndex: 'updateTime',
             key: 'updateTime',
             width: 170,
+            render: (text) => {
+                return text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '-';
+            }
         },
         {
             title: '状态',
