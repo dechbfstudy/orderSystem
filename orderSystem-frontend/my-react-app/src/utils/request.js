@@ -7,6 +7,7 @@ const service = axios.create({
     headers: { 'Content-Type': 'application/json;charset=utf-8' }
 });
 
+const MAX_RETRY_COUNT = 3;
 let isRefreshing = false;
 let requestsQueue = [];
 
@@ -36,8 +37,15 @@ service.interceptors.response.use(
         console.log('响应拦截器错误：', "YES")
         console.log('响应拦截器错误error：', error)
         const originalRequest = error.config;
+
+        console.log('响应拦截器错误originalRequest：', originalRequest)
+
         if (!error.response) return Promise.reject(error);
 
+        originalRequest._retryCount = originalRequest._retryCount || 0;
+        if (originalRequest._retryCount >= MAX_RETRY_COUNT) {
+            return Promise.reject(error);
+        }
         if (isRefreshing) {
             return new Promise((resolve) => {
                 requestsQueue.push((newToken) => {
@@ -47,6 +55,7 @@ service.interceptors.response.use(
             });
         }
 
+        originalRequest._retryCount += 1;
         isRefreshing = true;
 
         try {

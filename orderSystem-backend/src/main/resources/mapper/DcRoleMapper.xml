@@ -12,4 +12,14 @@
         </where>
         order by CREATE_TIME desc
     </select>
+
+    <select id="queryByRoleId" resultType="com.dianchong.ordersystem.entity.DcRole">
+        select * from dc_role where role_id = #{roleId}
+    </select>
+
+    <update id="updateRoleStatusById">
+        UPDATE dc_role
+        SET status = #{status}
+        WHERE role_id = #{roleId}
+    </update>
 </mapper>

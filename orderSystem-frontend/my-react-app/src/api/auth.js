@@ -7,6 +7,7 @@ import {data} from "react-router-dom";
 const API_URL = {
     LOGIN: '/auth/login',
     ROLE_LIST: '/system/role-permissions/list',
+    ED_ROLE: '/system/role-permissions/ed-role',
 };
 
 /**
@@ -29,5 +30,16 @@ export function getRoleList(data) {
         url: API_URL.ROLE_LIST,
         method: 'get',
         params: data
+    });
+}
+
+/**
+ * 启用/禁用角色 (会自动带 Token)
+ */
+export function enableOrDisableRole(data) {
+    return request({
+        url: API_URL.ED_ROLE,
+        method: 'post',
+         data
     });
 }

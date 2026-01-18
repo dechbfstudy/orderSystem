@@ -12,7 +12,7 @@ import {
     SafetyCertificateOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import {getRoleList, login} from "../api/auth.js";
+import {enableOrDisableRole, getRoleList, login} from "../api/auth.js";
 import {setTokens, setUserInfo} from "../utils/storage.js";
 
 // ==========================================
@@ -140,15 +140,6 @@ const PermissionSettings = () => {
         } finally {
             setLoading(false);
         }
-
-        // setTimeout(() => {
-        //     let filtered = [...MOCK_ROLES];
-        //     if (params.roleName) {
-        //         filtered = filtered.filter(item => item.roleName.includes(params.roleName));
-        //     }
-        //     setData(filtered);
-        //     setLoading(false);
-        // }, 500);
     };
 
     const handleSearch = () => {
@@ -161,11 +152,30 @@ const PermissionSettings = () => {
     };
 
     // 2. 状态切换
-    const handleStatusChange = (checked, record) => {
-        // 模拟 API
-        const newData = data.map(item => item.key === record.key ? { ...item, status: checked } : item);
-        setData(newData);
-        message.success(`角色 [${record.roleName}] 已${checked ? '启用' : '禁用'}`);
+    const handleStatusChange = async (checked, record) => {
+        console.log(record);
+        console.log(checked);
+
+        try {
+            const requestData = {
+                roleId: record.key,
+                status: checked
+            };
+
+            const res = await enableOrDisableRole(requestData);
+            console.log(res)
+            const status = res.status;
+            if (status !== checked){
+                message.error(checked ? `启用角色 [${record.roleName}] 失败` : `禁用角色 [${record.roleName}] 失败`);
+            }else{
+                const newData = data.map(item => item.key === res.key ? { ...item, ...res, status: status } : item);
+                setData(newData);
+                message.success(`角色 [${record.roleName}] 已${checked ? '启用' : '禁用'}`);
+            }
+        } catch (error) {
+            console.error('启用/禁用角色失败', error);
+            message.error(checked ? `启用角色 [${record.roleName}] 失败` : `禁用角色 [${record.roleName}] 失败`);
+        }
     };
 
     // ==========================

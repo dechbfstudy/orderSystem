@@ -3,12 +3,12 @@ package com.dianchong.ordersystem.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Data
-public class LoginRequest {
-    @NotNull
-    private String userAccount;
-    @NotNull
-    private String password;
-    private Boolean rememberMe = false;
-}
+import java.math.BigDecimal;
 
+@Data
+public class EdRoleRequest {
+    @NotNull
+    private BigDecimal roleId;
+    @NotNull
+    private Boolean status;
+}
