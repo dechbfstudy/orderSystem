@@ -29,62 +29,64 @@ service.interceptors.request.use(
 
 // === 响应拦截器 ===
 service.interceptors.response.use(
-    (response) => response.data,
+    (response) =>
+        response.data
+    ,
     async (error) => {
+        console.log('响应拦截器错误：', "YES")
+        console.log('响应拦截器错误error：', error)
         const originalRequest = error.config;
         if (!error.response) return Promise.reject(error);
 
-        if (error.response.status === 401 && !originalRequest._retry) {
-            if (isRefreshing) {
-                return new Promise((resolve) => {
-                    requestsQueue.push((newToken) => {
-                        originalRequest.headers['Authorization'] = 'Bearer ' + newToken;
-                        resolve(service(originalRequest));
-                    });
+        if (isRefreshing) {
+            return new Promise((resolve) => {
+                requestsQueue.push((newToken) => {
+                    originalRequest.headers['Authorization'] = 'Bearer ' + newToken;
+                    resolve(service(originalRequest));
                 });
-            }
-
-            originalRequest._retry = true;
-            isRefreshing = true;
-
-            try {
-                // 使用工具类获取 RefreshToken
-                const refreshToken = getRefreshToken();
-
-                if (!refreshToken) throw new Error('No refresh token');
-
-                // 调用刷新接口
-                const { data } = await axios.post(
-                    ('http://localhost:8080') + '/auth/refresh',
-                    { refreshToken }
-                );
-
-                // 刷新成功后，判断应该存哪里
-                // 如果旧的 RefreshToken 在 localStorage 里，说明用户之前选了记住我，新 Token 也要存那里
-                const remember = isRememberMe();
-
-                // 保存新 Token
-                setTokens(data.accessToken, data.refreshToken, remember);
-
-                requestsQueue.forEach((cb) => cb(data.accessToken));
-                requestsQueue = [];
-
-                originalRequest.headers['Authorization'] = 'Bearer ' + data.accessToken;
-                return service(originalRequest);
-
-            } catch (refreshError) {
-                requestsQueue = [];
-                // 清除所有 Token
-                clearStorage();
-                const currentPath = window.location.pathname;
-                if (currentPath !== '/login') {
-                    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-                }
-                return Promise.reject(refreshError);
-            } finally {
-                isRefreshing = false;
-            }
+            });
         }
+
+        isRefreshing = true;
+
+        try {
+            // 使用工具类获取 RefreshToken
+            const refreshToken = getRefreshToken();
+
+            if (!refreshToken) throw new Error('No refresh token');
+
+            // 调用刷新接口
+            const { data } = await axios.post(
+                'http://localhost:8080/auth/refresh',
+                { refreshToken }
+            );
+
+            // 刷新成功后，判断应该存哪里
+            // 如果旧的 RefreshToken 在 localStorage 里，说明用户之前选了记住我，新 Token 也要存那里
+            const remember = isRememberMe();
+
+            // 保存新 Token
+            setTokens(data.accessToken, data.refreshToken, remember);
+
+            requestsQueue.forEach((cb) => cb(data.accessToken));
+            requestsQueue = [];
+
+            originalRequest.headers['Authorization'] = 'Bearer ' + data.accessToken;
+            return service(originalRequest);
+
+        } catch (refreshError) {
+            requestsQueue = [];
+            // 清除所有 Token
+            clearStorage();
+            const currentPath = window.location.pathname;
+            if (currentPath !== '/login') {
+                window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+            }
+            return Promise.reject(refreshError);
+        } finally {
+            isRefreshing = false;
+        }
+
         return Promise.reject(error);
     }
 );
