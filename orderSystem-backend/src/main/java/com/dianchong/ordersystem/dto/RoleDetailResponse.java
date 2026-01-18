@@ -1,6 +1,7 @@
 package com.dianchong.ordersystem.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,15 +10,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleResponse {
-    private BigDecimal key;
+public class RoleDetailResponse {
     private String roleName;
     private String remark;
+    private Boolean status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private Boolean status;
 
     private List<BigDecimal> permissionIds;
 }

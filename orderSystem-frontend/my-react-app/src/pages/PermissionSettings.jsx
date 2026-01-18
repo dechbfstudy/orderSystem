@@ -14,6 +14,7 @@ import {
 import dayjs from 'dayjs';
 import {enableOrDisableRole, getRoleList, login} from "../api/auth.js";
 import {setTokens, setUserInfo} from "../utils/storage.js";
+import RoleDetailInfoModal from "../modals/RoleDetailInfoModal.jsx";
 
 // ==========================================
 // 1. 模拟数据定义
@@ -73,38 +74,6 @@ const PERMISSION_TREE_DATA = [
     },
 ];
 
-// 模拟角色列表数据
-// const MOCK_ROLES = [
-//     {
-//         key: 1,
-//         roleName: '超级管理员',
-//         remark: '拥有系统所有权限',
-//         createTime: '2023-01-01 10:00:00',
-//         updateTime: '2023-05-20 14:00:00',
-//         status: true,
-//         // 假设拥有所有权限 keys
-//         permissions: ['dashboard', 'dashboard:view', 'system', 'system:permission', 'perm:view', 'perm:add', 'perm:edit', 'system:menu', 'menu:view', 'menu:edit', 'users', 'user:view', 'user:edit', 'user:reset', 'user:status', 'orders', 'order:view', 'order:add', 'order:audit', 'order:print']
-//     },
-//     {
-//         key: 2,
-//         roleName: '运营专员',
-//         remark: '负责订单处理和用户查看',
-//         createTime: '2023-02-15 09:30:00',
-//         updateTime: '2023-06-10 11:20:00',
-//         status: true,
-//         permissions: ['dashboard', 'dashboard:view', 'users', 'user:view', 'orders', 'order:view', 'order:add', 'order:print']
-//     },
-//     {
-//         key: 3,
-//         roleName: '审计员',
-//         remark: '只读权限，用于财务审计',
-//         createTime: '2023-03-10 16:00:00',
-//         updateTime: '2023-03-10 16:00:00',
-//         status: false,
-//         permissions: ['dashboard', 'dashboard:view', 'users', 'user:view', 'orders', 'order:view']
-//     }
-// ];
-
 const PermissionSettings = () => {
     const [searchForm] = Form.useForm();
     const [modalForm] = Form.useForm();
@@ -130,9 +99,9 @@ const PermissionSettings = () => {
     // 1. 数据查询
     const fetchData = async (params = {}) => {
         setLoading(true);
-
         try{
             const res = await getRoleList(params);
+            console.log(res)
             setData(res);
         }  catch (error) {
             console.error('获取角色列表失败', error);
@@ -153,9 +122,6 @@ const PermissionSettings = () => {
 
     // 2. 状态切换
     const handleStatusChange = async (checked, record) => {
-        console.log(record);
-        console.log(checked);
-
         try {
             const requestData = {
                 roleId: record.key,
@@ -163,12 +129,11 @@ const PermissionSettings = () => {
             };
 
             const res = await enableOrDisableRole(requestData);
-            console.log(res)
             const status = res.status;
             if (status !== checked){
                 message.error(checked ? `启用角色 [${record.roleName}] 失败` : `禁用角色 [${record.roleName}] 失败`);
             }else{
-                const newData = data.map(item => item.key === res.key ? { ...item, ...res, status: status } : item);
+                const newData = data.map(item => item.key === res.key ? { ...item, ...res} : item);
                 setData(newData);
                 message.success(`角色 [${record.roleName}] 已${checked ? '启用' : '禁用'}`);
             }
@@ -250,9 +215,6 @@ const PermissionSettings = () => {
         setIsDetailModalOpen(true);
     };
 
-    // ==========================
-    // 表格列定义
-    // ==========================
     const columns = [
         {
             title: '序号',
@@ -406,43 +368,11 @@ const PermissionSettings = () => {
             </Modal>
 
             {/* --- 弹窗 B: 详情 --- */}
-            <Modal
-                title="角色详情"
-                open={isDetailModalOpen}
-                onCancel={() => setIsDetailModalOpen(false)}
-                footer={[<Button key="close" onClick={() => setIsDetailModalOpen(false)}>关闭</Button>]}
-                width={600}
-            >
-                {currentRecord && (
-                    <div>
-                        <Descriptions bordered column={1} size="small" style={{ marginBottom: 20 }}>
-                            <Descriptions.Item label="角色名称">{currentRecord.roleName}</Descriptions.Item>
-                            <Descriptions.Item label="角色描述">{currentRecord.description || '-'}</Descriptions.Item>
-                            <Descriptions.Item label="创建时间">{currentRecord.createTime}</Descriptions.Item>
-                            <Descriptions.Item label="修改时间">{currentRecord.updateTime}</Descriptions.Item>
-                            <Descriptions.Item label="当前状态">
-                                <Tag color={currentRecord.status ? 'success' : 'error'}>
-                                    {currentRecord.status ? '启用' : '禁用'}
-                                </Tag>
-                            </Descriptions.Item>
-                        </Descriptions>
-
-                        <div style={{ fontWeight: 'bold', marginBottom: 8 }}>
-                            <SafetyCertificateOutlined /> 拥有权限：
-                        </div>
-                        <div style={{ border: '1px solid #f0f0f0', borderRadius: 6, padding: '10px', background: '#fafafa', maxHeight: 300, overflowY: 'auto' }}>
-                            {/* 只读模式的 Tree：禁用交互 (disabled) */}
-                            <Tree
-                                checkable
-                                disabled
-                                defaultExpandAll
-                                checkedKeys={currentRecord.permissions}
-                                treeData={PERMISSION_TREE_DATA}
-                            />
-                        </div>
-                    </div>
-                )}
-            </Modal>
+            <RoleDetailInfoModal
+                isDetailModalOpen={isDetailModalOpen}
+                setIsDetailModalOpen={setIsDetailModalOpen}
+                currentRecord={currentRecord}
+            />
         </div>
     );
 };

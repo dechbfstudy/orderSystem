@@ -1,6 +1,8 @@
 package com.dianchong.ordersystem.controller;
 
 import com.dianchong.ordersystem.dto.EdRoleRequest;
+import com.dianchong.ordersystem.dto.PermissionTreeResponse;
+import com.dianchong.ordersystem.dto.RoleDetailResponse;
 import com.dianchong.ordersystem.dto.RoleResponse;
 import com.dianchong.ordersystem.service.RolePermissionsService;
 import jakarta.validation.Valid;
@@ -23,6 +25,12 @@ public class RolePermissionsController {
     public ResponseEntity<List<RoleResponse>> getRoleList(@RequestParam(value = "roleName", required = false) String roleName){
         List<RoleResponse> roleListResponse = rolePermissionsService.getRoleList(roleName);
         return ResponseEntity.ok(roleListResponse);
+    }
+
+    @GetMapping("/permission-tree")
+    public ResponseEntity<List<PermissionTreeResponse>> getPermissionTree(){
+        List<PermissionTreeResponse> permissionTree = rolePermissionsService.getPermissionTree();
+        return ResponseEntity.ok(permissionTree);
     }
 
     @PostMapping("/ed-role")

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianchong.ordersystem.mapper.DcRolePermissionMapper">
+    <select id="queryPermissionIdByRoleId" resultType="java.math.BigDecimal">
+        select PERMISSION_ID from DC_ROLE_PERMISSION where role_id = #{roleId}
+    </select>
+
+    <select id="queryLeafPermissionIdsByRoleId" resultType="java.math.BigDecimal" parameterType="java.math.BigDecimal">
+        SELECT rp.PERMISSION_ID
+        FROM DC_ROLE_PERMISSION rp
+        WHERE rp.ROLE_ID = #{roleId}
+          AND NOT EXISTS (SELECT 1
+                          FROM DC_PERMISSION p
+                          WHERE p.PARENT_ID = rp.PERMISSION_ID)
+    </select>
+</mapper>

@@ -8,6 +8,7 @@ const API_URL = {
     LOGIN: '/auth/login',
     ROLE_LIST: '/system/role-permissions/list',
     ED_ROLE: '/system/role-permissions/ed-role',
+    PERMISSION_TREE: '/system/role-permissions/permission-tree',
 };
 
 /**
@@ -41,5 +42,12 @@ export function enableOrDisableRole(data) {
         url: API_URL.ED_ROLE,
         method: 'post',
          data
+    });
+}
+
+export function getPermissionTree() {
+    return request({
+        url: API_URL.PERMISSION_TREE,
+        method: 'get'
     });
 }

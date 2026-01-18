@@ -150,6 +150,11 @@ VALUES
     ('编辑客户',4,'customer:edit','编辑客户')
     ;
 
+INSERT INTO DC_ROLE_PERMISSION (ROLE_ID, PERMISSION_ID)
+VALUES
+    (1,1),
+    (1,5);
+
 INSERT INTO DC_USER_ROLE(USER_ID, ROLE_ID)
 VALUES
     (1,1),
