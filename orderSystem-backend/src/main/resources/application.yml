@@ -6,10 +6,6 @@ spring:
     username: root
     password: ENC(6ATWr+veeOXWM6QwkA8AEP33s6bb9b3EsFa7kSDYG6F1J0xjzwmarG3jOrlNE2XJ)
     driver-class-name: com.mysql.cj.jdbc.Driver
-  sql:
-    init:
-      schema-locations: classpath:initDB/create_db_data.sql
-      mode: always
 
 app:
   cors:
