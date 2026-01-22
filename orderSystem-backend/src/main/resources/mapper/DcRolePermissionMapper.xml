@@ -15,4 +15,17 @@
                           FROM DC_PERMISSION p
                           WHERE p.PARENT_ID = rp.PERMISSION_ID)
     </select>
+
+    <delete id="deleteByRoleId">
+        delete from DC_ROLE_PERMISSION where role_id = #{roleId}
+    </delete>
+
+    <insert id="insertBatch">
+        INSERT INTO DC_ROLE_PERMISSION (ROLE_ID, PERMISSION_ID)
+        VALUES
+        <foreach item="item" index="index" collection="permissionIds" separator=",">
+            (#{roleId}, #{item})
+        </foreach>
+    </insert>
+
 </mapper>

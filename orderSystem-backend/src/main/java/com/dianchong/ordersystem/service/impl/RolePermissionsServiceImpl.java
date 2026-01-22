@@ -2,6 +2,7 @@ package com.dianchong.ordersystem.service.impl;
 
 import com.dianchong.ordersystem.dto.PermissionTreeResponse;
 import com.dianchong.ordersystem.dto.RoleDetailResponse;
+import com.dianchong.ordersystem.dto.RoleRequest;
 import com.dianchong.ordersystem.dto.RoleResponse;
 import com.dianchong.ordersystem.entity.DcPermission;
 import com.dianchong.ordersystem.entity.DcRole;
@@ -9,8 +10,10 @@ import com.dianchong.ordersystem.mapper.DcPermissionMapper;
 import com.dianchong.ordersystem.mapper.DcRoleMapper;
 import com.dianchong.ordersystem.mapper.DcRolePermissionMapper;
 import com.dianchong.ordersystem.service.RolePermissionsService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class RolePermissionsServiceImpl implements RolePermissionsService {
 
     @Autowired
@@ -87,6 +91,28 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
             );
         }).collect(Collectors.toList());
         return buildPermissionTree(permissionTreeResponses, BigDecimal.ZERO);
+    }
+
+    @Override
+    public void createRole(RoleRequest roleRequest) {
+        DcRole dcRole = new DcRole();
+        BeanUtils.copyProperties(roleRequest, dcRole);
+        roleMapper.insertRole(dcRole);
+        if (!CollectionUtils.isEmpty(roleRequest.getPermissionIds())){
+            rolePermissionMapper.insertBatch(dcRole.getRoleId(), roleRequest.getPermissionIds());
+        }
+    }
+
+    @Override
+    public void updateRole(RoleRequest roleRequest) {
+        DcRole dcRole = new DcRole();
+        BeanUtils.copyProperties(roleRequest, dcRole);
+        roleMapper.updateRole(dcRole);
+
+        rolePermissionMapper.deleteByRoleId(dcRole.getRoleId());
+        if (!CollectionUtils.isEmpty(roleRequest.getPermissionIds())){
+            rolePermissionMapper.insertBatch(dcRole.getRoleId(), roleRequest.getPermissionIds());
+        }
     }
 
     private List<PermissionTreeResponse> buildPermissionTree(List<PermissionTreeResponse> list, BigDecimal parentId) {

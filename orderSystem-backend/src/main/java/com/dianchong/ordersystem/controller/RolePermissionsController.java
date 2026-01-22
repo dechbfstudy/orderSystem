@@ -2,7 +2,7 @@ package com.dianchong.ordersystem.controller;
 
 import com.dianchong.ordersystem.dto.EdRoleRequest;
 import com.dianchong.ordersystem.dto.PermissionTreeResponse;
-import com.dianchong.ordersystem.dto.RoleDetailResponse;
+import com.dianchong.ordersystem.dto.RoleRequest;
 import com.dianchong.ordersystem.dto.RoleResponse;
 import com.dianchong.ordersystem.service.RolePermissionsService;
 import jakarta.validation.Valid;
@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/system/role-permissions")
@@ -40,12 +38,14 @@ public class RolePermissionsController {
     }
 
     @PostMapping("/credit")
-    public ResponseEntity<Boolean> createRole(){
-        return null;
+    public ResponseEntity<String> createRole(@Valid @RequestBody RoleRequest roleRequest){
+        rolePermissionsService.createRole(roleRequest);
+        return ResponseEntity.ok("success");
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<Boolean> editRole(){
-        return null;
+    public ResponseEntity<String> editRole(@Valid @RequestBody RoleRequest roleRequest){
+        rolePermissionsService.updateRole(roleRequest);
+        return ResponseEntity.ok("success");
     }
 }

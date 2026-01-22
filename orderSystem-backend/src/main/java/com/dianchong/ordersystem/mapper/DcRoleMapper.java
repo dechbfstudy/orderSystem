@@ -13,4 +13,8 @@ public interface DcRoleMapper {
     DcRole queryByRoleId(BigDecimal roleId);
 
     int updateRoleStatusById(BigDecimal roleId, Boolean status);
+
+    void insertRole(DcRole role);
+
+    void updateRole(DcRole role);
 }

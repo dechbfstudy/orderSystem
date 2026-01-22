@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {Form, Input, message, Modal, Spin, Switch, Tree} from "antd";
-import {getPermissionTree} from "../api/auth.js";
+import {createRole, getPermissionTree, updateRole} from "../api/auth.js";
+import {data} from "react-router-dom";
 
-const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen ,currentRecord}) => {
+const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, updateTbData}) => {
     const [modalForm] = Form.useForm();
 
     const [permissionSpinning, setPermissionSpinning] = useState(true)
@@ -23,7 +24,7 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen ,currentRecord}) => 
             setPermissionSpinning(false);
         });
 
-        if (currentRecord){
+        if (currentRecord) {
             setTimeout(() => {
                 modalForm.setFieldsValue({
                     roleName: currentRecord.roleName,
@@ -32,10 +33,10 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen ,currentRecord}) => 
                 });
                 setCheckedKeys(currentRecord.permissionIds || []);
             }, 0);
-        }else{
+        } else {
             setTimeout(() => {
                 modalForm.resetFields();
-                modalForm.setFieldsValue({ status: true });
+                modalForm.setFieldsValue({status: true});
                 setCheckedKeys([]);
             }, 0);
         }
@@ -48,47 +49,49 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen ,currentRecord}) => 
     };
 
     const handleModalSubmit = async () => {
-        // try {
-        //     const values = await modalForm.validateFields();
-        //     setModalLoading(true);
-        //     setTimeout(() => {
-        //         const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
-        //
-        //         if (!currentRecord) {
-        //             // 新增
-        //             const newRole = {
-        //                 key: Date.now(),
-        //                 ...values,
-        //                 createTime: now,
-        //                 updateTime: now,
-        //                 permissions: checkedKeys // 保存选中的权限
-        //             };
-        //             message.success('角色创建成功');
-        //         } else {
-        //             // 修改
-        //             const newData = data.map(item => item.key === currentRecord.key ? {
-        //                 ...item,
-        //                 ...values,
-        //                 updateTime: now,
-        //                 permissions: checkedKeys
-        //             } : item);
-        //             message.success('角色修改成功');
-        //         }
-        //         setIsModalOpen(false);
-        //         setModalLoading(false);
-        //     }, 800);
-        // } catch (e) {}
+        const values = await modalForm.validateFields();
+        setModalLoading(true);
+        if (!currentRecord) {
+            const requestBody = {
+                ...values,
+                permissionIds: checkedKeys
+            };
+            createRole(requestBody).then(r => {
+                if (r === 'success') {
+                    message.success('角色创建成功');
+                    setModalLoading(false);
+                    setIsModalOpen(false);
+                }
+            }).catch((e) =>{
+                message.error('操作失败：' + e.message);
+            });
+        } else {
+            const requestBody = {
+                ...values,
+                roleId: currentRecord.key,
+                permissionIds: checkedKeys
+            };
+            updateRole(requestBody).then(r => {
+                if (r === 'success') {
+                    message.success('角色修改成功');
+                    setModalLoading(false);
+                    setIsModalOpen(false);
+                }
+            }).catch((e) =>{
+                message.error('操作失败：' + e.message);
+            });
+        }
     };
 
     return (
         <Modal
             title={modalTitle}
             open={isModalOpen}
-            onOk={() => handleModalSubmit(onSave)}
+            onOk={() => handleModalSubmit()}
             onCancel={() => setIsModalOpen(false)}
-            confirmLoading={modalLoading}
+            loading={modalLoading}
             width={600}
-            destroyOnClose
+            afterClose={() => updateTbData()}
         >
             <Form form={modalForm} layout="vertical" preserve={false}>
                 <Form.Item
@@ -126,6 +129,7 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen ,currentRecord}) => 
                 <Form.Item name="status" label="状态" valuePropName="checked">
                     <Switch checkedChildren="启用" unCheckedChildren="禁用"/>
                 </Form.Item>
+
             </Form>
         </Modal>);
 }

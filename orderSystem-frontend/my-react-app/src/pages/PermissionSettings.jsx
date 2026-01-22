@@ -155,7 +155,6 @@ const PermissionSettings = () => {
 
     return (
         <div style={{ padding: '0' }}>
-            {/* 1. 搜索区域 */}
             <Card style={{ marginBottom: 16 }}>
                 <Form form={searchForm} onFinish={handleSearch}>
                     <Row gutter={[24, 16]} align="middle">
@@ -184,7 +183,7 @@ const PermissionSettings = () => {
             <Card
                 title="角色列表"
                 extra={
-                    <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreate}>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={handleOpenCreate} loading={loading}>
                         创建角色
                     </Button>
                 }
@@ -204,6 +203,7 @@ const PermissionSettings = () => {
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
                 currentRecord={currentRecord}
+                updateTbData={() => handleSearch()}
             />
 
             {/* --- 弹窗 B: 详情 --- */}

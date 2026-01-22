@@ -22,4 +22,19 @@
         SET status = #{status}
         WHERE role_id = #{roleId}
     </update>
+
+    <insert id="insertRole" parameterType="com.dianchong.ordersystem.entity.DcRole"
+    useGeneratedKeys="true" keyProperty="roleId">
+        INSERT INTO DC_ROLE (ROLE_NAME, STATUS, REMARK, CREATE_TIME, UPDATE_TIME)
+        VALUES (#{roleName}, #{status} , #{remark}, NOW(), NOW())
+    </insert>
+    
+    <update id="updateRole" parameterType="com.dianchong.ordersystem.entity.DcRole">
+        UPDATE DC_ROLE
+        SET ROLE_NAME = #{roleName},
+            STATUS = #{status},
+            REMARK = #{remark},
+            UPDATE_TIME = NOW()
+        WHERE ROLE_ID = #{roleId}
+    </update>
 </mapper>

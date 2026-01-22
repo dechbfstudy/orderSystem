@@ -9,4 +9,8 @@ import java.util.List;
 public interface DcRolePermissionMapper {
     List<BigDecimal> queryPermissionIdByRoleId(BigDecimal roleId);
     List<BigDecimal> queryLeafPermissionIdsByRoleId(BigDecimal roleId);
+
+    void deleteByRoleId(BigDecimal roleId);
+
+    void insertBatch(BigDecimal roleId, List<BigDecimal> permissionIds);
 }
