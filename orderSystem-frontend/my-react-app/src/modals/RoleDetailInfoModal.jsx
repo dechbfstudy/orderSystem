@@ -9,10 +9,7 @@ const RoleDetailInfoModal = ({isDetailModalOpen, setIsDetailModalOpen, currentRe
     const [permissionTreeData, setPermissionTreeData] = useState([]);
 
     useEffect(() => {
-        console.log('打开角色详情模态框，currentRecord:', currentRecord);
-        console.log('打开角色详情模态框，isDetailModalOpen:', isDetailModalOpen);
         if (!isDetailModalOpen) return;
-        console.log('打开角色详情模态框，currentRecord:', currentRecord);
         getPermissionTree().then(r => {
             setPermissionTreeData(r);
         }).catch(err => {
@@ -64,7 +61,6 @@ const RoleDetailInfoModal = ({isDetailModalOpen, setIsDetailModalOpen, currentRe
                             maxHeight: 300,
                             overflowY: 'auto'
                         }}>
-                            {/* 只读模式的 Tree：禁用交互 (disabled) */}
                             <Tree
                                 checkable
                                 disabled

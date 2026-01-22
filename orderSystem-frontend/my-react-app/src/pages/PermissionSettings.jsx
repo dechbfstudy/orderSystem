@@ -1,82 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import {
-    Card, Table, Form, Input, Button,
-    Space, Switch, message, Tag, Modal, Row, Col, Tree, Descriptions
-} from 'antd';
-import {
-    SearchOutlined,
-    ReloadOutlined,
-    PlusOutlined,
-    EyeOutlined,
-    EditOutlined,
-    SafetyCertificateOutlined
-} from '@ant-design/icons';
+import React, {useEffect, useState} from 'react';
+import {Button, Card, Col, Form, Input, message, Row, Space, Switch, Table} from 'antd';
+import {EditOutlined, EyeOutlined, PlusOutlined, ReloadOutlined, SearchOutlined} from '@ant-design/icons';
 import dayjs from 'dayjs';
-import {enableOrDisableRole, getRoleList, login} from "../api/auth.js";
-import {setTokens, setUserInfo} from "../utils/storage.js";
+import {enableOrDisableRole, getRoleList} from "../api/auth.js";
 import RoleDetailInfoModal from "../modals/RoleDetailInfoModal.jsx";
-
-// ==========================================
-// 1. 模拟数据定义
-// ==========================================
-
-// 定义系统所有的权限树结构 (菜单 -> 操作)
-const PERMISSION_TREE_DATA = [
-    {
-        title: '控制台 (Dashboard)',
-        key: 'dashboard',
-        children: [
-            { title: '查看分析', key: 'dashboard:view' },
-        ],
-    },
-    {
-        title: '系统设置',
-        key: 'system',
-        children: [
-            {
-                title: '权限设置',
-                key: 'system:permission',
-                children: [
-                    { title: '查看列表', key: 'perm:view' },
-                    { title: '新增角色', key: 'perm:add' },
-                    { title: '修改角色', key: 'perm:edit' },
-                ]
-            },
-            {
-                title: '菜单管理',
-                key: 'system:menu',
-                children: [
-                    { title: '查看菜单', key: 'menu:view' },
-                    { title: '编辑菜单', key: 'menu:edit' },
-                ]
-            },
-        ],
-    },
-    {
-        title: '用户管理',
-        key: 'users',
-        children: [
-            { title: '查看用户', key: 'user:view' },
-            { title: '新增/编辑', key: 'user:edit' },
-            { title: '重置密码', key: 'user:reset' },
-            { title: '启用/禁用', key: 'user:status' },
-        ],
-    },
-    {
-        title: '订单管理',
-        key: 'orders',
-        children: [
-            { title: '查看订单', key: 'order:view' },
-            { title: '创建订单', key: 'order:add' },
-            { title: '审核订单', key: 'order:audit' },
-            { title: '打印订单', key: 'order:print' },
-        ],
-    },
-];
+import RoleModal from "../modals/RoleModal.jsx";
 
 const PermissionSettings = () => {
     const [searchForm] = Form.useForm();
-    const [modalForm] = Form.useForm();
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -86,11 +17,7 @@ const PermissionSettings = () => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // 详情
 
     const [modalTitle, setModalTitle] = useState('');
-    const [modalLoading, setModalLoading] = useState(false);
     const [currentRecord, setCurrentRecord] = useState(null); // 当前操作行
-
-    // 树形控件选中的 keys
-    const [checkedKeys, setCheckedKeys] = useState([]);
 
     useEffect(() => {
         fetchData();
@@ -143,73 +70,18 @@ const PermissionSettings = () => {
         }
     };
 
-    // ==========================
-    // 新增 / 修改 逻辑
-    // ==========================
     const handleOpenCreate = () => {
         setModalTitle('创建角色');
         setCurrentRecord(null);
-        setCheckedKeys([]); // 清空权限选择
-        modalForm.resetFields();
-        modalForm.setFieldsValue({ status: true });
         setIsModalOpen(true);
     };
 
     const handleOpenEdit = (record) => {
         setModalTitle('修改角色');
         setCurrentRecord(record);
-        setCheckedKeys(record.permissions || []); // 回显权限
-        modalForm.setFieldsValue({
-            roleName: record.roleName,
-            description: record.description,
-            status: record.status
-        });
         setIsModalOpen(true);
     };
 
-    // 树形控件勾选事件
-    const onTreeCheck = (checkedKeysValue) => {
-        setCheckedKeys(checkedKeysValue);
-    };
-
-    const handleModalSubmit = async () => {
-        try {
-            const values = await modalForm.validateFields();
-            setModalLoading(true);
-            setTimeout(() => {
-                const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
-
-                if (!currentRecord) {
-                    // 新增
-                    const newRole = {
-                        key: Date.now(),
-                        ...values,
-                        createTime: now,
-                        updateTime: now,
-                        permissions: checkedKeys // 保存选中的权限
-                    };
-                    setData([newRole, ...data]);
-                    message.success('角色创建成功');
-                } else {
-                    // 修改
-                    const newData = data.map(item => item.key === currentRecord.key ? {
-                        ...item,
-                        ...values,
-                        updateTime: now,
-                        permissions: checkedKeys
-                    } : item);
-                    setData(newData);
-                    message.success('角色修改成功');
-                }
-                setIsModalOpen(false);
-                setModalLoading(false);
-            }, 800);
-        } catch (e) {}
-    };
-
-    // ==========================
-    // 详情 逻辑
-    // ==========================
     const handleOpenDetail = (record) => {
         setCurrentRecord(record);
         setIsDetailModalOpen(true);
@@ -327,45 +199,12 @@ const PermissionSettings = () => {
             </Card>
 
             {/* --- 弹窗 A: 新增/修改 --- */}
-            <Modal
-                title={modalTitle}
-                open={isModalOpen}
-                onOk={handleModalSubmit}
-                onCancel={() => setIsModalOpen(false)}
-                confirmLoading={modalLoading}
-                width={600}
-                destroyOnClose
-            >
-                <Form form={modalForm} layout="vertical" preserve={false}>
-                    <Form.Item
-                        name="roleName"
-                        label="角色名称"
-                        rules={[{ required: true, message: '请输入角色名称' }]}
-                    >
-                        <Input placeholder="例如：财务专员" />
-                    </Form.Item>
-
-                    <Form.Item name="description" label="角色描述">
-                        <Input.TextArea rows={2} placeholder="请输入角色职责描述" />
-                    </Form.Item>
-
-                    <Form.Item label="权限配置" tooltip="勾选该角色可操作的菜单和功能">
-                        <div style={{ border: '1px solid #d9d9d9', borderRadius: 6, padding: '10px', maxHeight: 300, overflowY: 'auto' }}>
-                            <Tree
-                                checkable
-                                defaultExpandAll
-                                onCheck={onTreeCheck}
-                                checkedKeys={checkedKeys}
-                                treeData={PERMISSION_TREE_DATA}
-                            />
-                        </div>
-                    </Form.Item>
-
-                    <Form.Item name="status" label="状态" valuePropName="checked">
-                        <Switch checkedChildren="启用" unCheckedChildren="禁用" />
-                    </Form.Item>
-                </Form>
-            </Modal>
+            <RoleModal
+                modalTitle={modalTitle}
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+                currentRecord={currentRecord}
+            />
 
             {/* --- 弹窗 B: 详情 --- */}
             <RoleDetailInfoModal
