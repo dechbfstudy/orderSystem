@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Form, Input, message, Modal, Spin, Switch, Tree} from "antd";
+import {ColorPicker, Form, Input, message, Modal, Spin, Switch, Tree} from "antd";
 import {createRole, getPermissionTree, updateRole} from "../api/auth.js";
 import {data} from "react-router-dom";
 
@@ -11,6 +11,8 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
 
     const [modalLoading, setModalLoading] = useState(false);
     const [checkedKeys, setCheckedKeys] = useState([]);
+
+    const [primaryColor, setPrimaryColor] = useState('#1890ff');
 
     useEffect(() => {
         if (!isModalOpen) return;
@@ -29,14 +31,16 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                 modalForm.setFieldsValue({
                     roleName: currentRecord.roleName,
                     remark: currentRecord.remark,
-                    status: currentRecord.status
+                    status: currentRecord.status,
+                    highlightColor: currentRecord.highlightColor
                 });
                 setCheckedKeys(currentRecord.permissionIds || []);
             }, 0);
         } else {
+            setPrimaryColor('#1890ff')
             setTimeout(() => {
                 modalForm.resetFields();
-                modalForm.setFieldsValue({status: true});
+                modalForm.setFieldsValue({status: true, highlightColor: '#1890ff'});
                 setCheckedKeys([]);
             }, 0);
         }
@@ -50,10 +54,12 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
 
     const handleModalSubmit = async () => {
         const values = await modalForm.validateFields();
+        console.log('values:', values)
         setModalLoading(true);
         if (!currentRecord) {
             const requestBody = {
                 ...values,
+                highlightColor: primaryColor,
                 permissionIds: checkedKeys
             };
             createRole(requestBody).then(r => {
@@ -64,10 +70,13 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                 }
             }).catch((e) =>{
                 message.error('操作失败：' + e.message);
+                setModalLoading(false);
+                setIsModalOpen(false);
             });
         } else {
             const requestBody = {
                 ...values,
+                highlightColor: primaryColor,
                 roleId: currentRecord.key,
                 permissionIds: checkedKeys
             };
@@ -79,6 +88,8 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                 }
             }).catch((e) =>{
                 message.error('操作失败：' + e.message);
+                setModalLoading(false);
+                setIsModalOpen(false);
             });
         }
     };
@@ -125,7 +136,16 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                         </div>
                     </Spin>
                 </Form.Item>
-
+                <Form.Item name="highlightColor" label="显示高亮颜色">
+                    <ColorPicker
+                        defaultValue={primaryColor}
+                        value={primaryColor}
+                        onChange={(color) => setPrimaryColor(color.toHexString())}
+                        showText
+                        disabledAlpha
+                        destroyOnHidden
+                    />
+                </Form.Item>
                 <Form.Item name="status" label="状态" valuePropName="checked">
                     <Switch checkedChildren="启用" unCheckedChildren="禁用"/>
                 </Form.Item>

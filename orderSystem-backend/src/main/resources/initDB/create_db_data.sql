@@ -40,22 +40,23 @@ CREATE TABLE DC_USER
 
 CREATE TABLE DC_ROLE
 (
-    ROLE_ID     BIGINT       NOT NULL AUTO_INCREMENT COMMENT '角色ID',
-    ROLE_NAME   VARCHAR(30)  NOT NULL COMMENT '角色名称 (如: 管理员)',
-    STATUS      TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否禁用：0-禁用，1-正常',
-    REMARK      VARCHAR(500) DEFAULT NULL COMMENT '备注',
-    CREATE_TIME DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    UPDATE_TIME DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    ROLE_ID         BIGINT      NOT NULL AUTO_INCREMENT COMMENT '角色ID',
+    ROLE_NAME       VARCHAR(30) NOT NULL COMMENT '角色名称 (如: 管理员)',
+    STATUS          TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否禁用：0-禁用，1-正常',
+    REMARK          VARCHAR(500) DEFAULT NULL COMMENT '备注',
+    HIGHLIGHT_COLOR VARCHAR(20)  DEFAULT NULL COMMENT '高亮颜色',
+    CREATE_TIME     DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    UPDATE_TIME     DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (ROLE_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色信息表';
 
 CREATE TABLE DC_PERMISSION
 (
-    PERMISSION_ID   BIGINT       NOT NULL AUTO_INCREMENT COMMENT '权限ID',
-    PERMISSION_NAME VARCHAR(30)  NOT NULL COMMENT '权限名称 (如: 菜单权限)',
-    PARENT_ID       BIGINT       NOT NULL DEFAULT 0 COMMENT '父权限ID',
-    PERMISSION_KEY  VARCHAR(100) DEFAULT NULL COMMENT '权限标识符 (如: menu:view)',
-    REMARK          VARCHAR(500)          DEFAULT NULL COMMENT '备注',
+    PERMISSION_ID   BIGINT      NOT NULL AUTO_INCREMENT COMMENT '权限ID',
+    PERMISSION_NAME VARCHAR(30) NOT NULL COMMENT '权限名称 (如: 菜单权限)',
+    PARENT_ID       BIGINT      NOT NULL DEFAULT 0 COMMENT '父权限ID',
+    PERMISSION_KEY  VARCHAR(100)         DEFAULT NULL COMMENT '权限标识符 (如: menu:view)',
+    REMARK          VARCHAR(500)         DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (PERMISSION_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色权限表';
 
@@ -113,56 +114,49 @@ CREATE TABLE DC_CUSTOMER_ADDRESS
 
 -- 3. 插入初始数据（密码使用加密存储）
 INSERT INTO DC_USER (USERNAME, USER_ACCOUNT, PASSWORD, CREATE_TIME, IS_DISABLED)
-VALUES
-    ('admin', 'admin', '$argon2id$v=19$m=16384,t=2,p=1$FvNNU0W62b5AMKSRMY1v5Q$LhFzsWCP7M1wALDwLa4jteuMjbrB/ect/6CI7mFHzEI', NOW(), 1),
-    ('test', 'test', '$argon2id$v=19$m=16384,t=2,p=1$dFXvvL470dPInlVIsjWaXQ$HR9SY5X+TuxuSoLGfm1atp1L6QbwXGDHoZ+ti/OjYaE', NOW(), 1),
-    ('guest', 'guest', '$argon2id$v=19$m=16384,t=2,p=1$JEK/gRCcflpOQi7tQME+sA$MrKRJZ+dnmhTe8Wg+khdoZHEJHo17FfJLgIDzg0WMAU', NOW(), 0); -- 禁用账户示例
+VALUES ('admin', 'admin',
+        '$argon2id$v=19$m=16384,t=2,p=1$FvNNU0W62b5AMKSRMY1v5Q$LhFzsWCP7M1wALDwLa4jteuMjbrB/ect/6CI7mFHzEI', NOW(), 1),
+       ('test', 'test',
+        '$argon2id$v=19$m=16384,t=2,p=1$dFXvvL470dPInlVIsjWaXQ$HR9SY5X+TuxuSoLGfm1atp1L6QbwXGDHoZ+ti/OjYaE', NOW(), 1),
+       ('guest', 'guest',
+        '$argon2id$v=19$m=16384,t=2,p=1$JEK/gRCcflpOQi7tQME+sA$MrKRJZ+dnmhTe8Wg+khdoZHEJHo17FfJLgIDzg0WMAU', NOW(),
+        0); -- 禁用账户示例
 
-INSERT INTO DC_ROLE (ROLE_NAME, STATUS, REMARK, CREATE_TIME)
-VALUES ('超级管理员', 1, '系统管理员角色', NOW());
+INSERT INTO DC_ROLE (ROLE_NAME, HIGHLIGHT_COLOR,STATUS, REMARK, CREATE_TIME)
+VALUES ('超级管理员', '#fa541c',1, '系统管理员角色', NOW());
 
 INSERT INTO DC_PERMISSION (PERMISSION_NAME, PARENT_ID, PERMISSION_KEY, REMARK)
-VALUES
-    ('主页（数据分析面板）', 0, null, '主页（数据分析面板）'),
-    ('系统设置',0,null,'系统设置'),
-    ('订单管理',0,null,'订单管理'),
-    ('客户管理',0,null,'客户管理'),
+VALUES ('主页（数据分析面板）', 0, null, '主页（数据分析面板）'),
+       ('系统设置', 0, null, '系统设置'),
+       ('订单管理', 0, null, '订单管理'),
+       ('客户管理', 0, null, '客户管理'),
 
-    ('查看分析', 1, 'dashboard:view', '查看分析'),
+       ('查看分析', 1, 'dashboard:view', '查看分析'),
 
-    ('权限设置',2,null,'权限设置'),
-    ('查看列表',6,'systemSetting:rolePermission:view','查看角色权限'),
-    ('创建角色',6,'systemSetting:rolePermission:create','创建角色和对应权限'),
-    ('修改角色',6,'systemSetting:rolePermission:update','修改角色和对应权限'),
+       ('权限设置', 2, null, '权限设置'),
+       ('查看列表', 6, 'systemSetting:rolePermission:view', '查看角色权限'),
+       ('创建角色', 6, 'systemSetting:rolePermission:create', '创建角色和对应权限'),
+       ('修改角色', 6, 'systemSetting:rolePermission:update', '修改角色和对应权限'),
 
-    ('用户管理',2,null,'系统用户管理'),
-    ('查看用户',10,'systemSetting:systemUser:view','查看系统用户列表'),
-    ('创建用户',10,'systemSetting:systemUser:create','创建系统用户'),
-    ('修改用户',10,'systemSetting:systemUser:update','修改系统用户'),
+       ('用户管理', 2, null, '系统用户管理'),
+       ('查看用户', 10, 'systemSetting:systemUser:view', '查看系统用户列表'),
+       ('创建用户', 10, 'systemSetting:systemUser:create', '创建系统用户'),
+       ('修改用户', 10, 'systemSetting:systemUser:update', '修改系统用户'),
 
-    ('查看订单',3,'order:view','查看订单'),
-    ('创建订单',3,'order:create','创建订单'),
-    ('编辑订单',3,'order:edit','编辑订单'),
-    ('审核订单',3,'order:review','审核订单'),
+       ('查看订单', 3, 'order:view', '查看订单'),
+       ('创建订单', 3, 'order:create', '创建订单'),
+       ('编辑订单', 3, 'order:edit', '编辑订单'),
+       ('审核订单', 3, 'order:review', '审核订单'),
 
-    ('查看客户',4,'customer:view','查看客户'),
-    ('创建客户',4,'customer:create','创建客户'),
-    ('编辑客户',4,'customer:edit','编辑客户')
-    ;
-
-INSERT INTO DC_ROLE_PERMISSION (ROLE_ID, PERMISSION_ID)
-VALUES
-    (1,1),
-    (1,5),
-    (1,2),
-    (1,6),
-    (1,7);;
+       ('查看客户', 4, 'customer:view', '查看客户'),
+       ('创建客户', 4, 'customer:create', '创建客户'),
+       ('编辑客户', 4, 'customer:edit', '编辑客户')
+;
 
 INSERT INTO DC_USER_ROLE(USER_ID, ROLE_ID)
-VALUES
-    (1,1),
-    (2,1),
-    (3,1);
+VALUES (1, 1),
+       (2, 1),
+       (3, 1);
 
 COMMIT;
 

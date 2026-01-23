@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RoleResponse {
     private BigDecimal key;
+    private String highlightColor;
     private String roleName;
     private String remark;
     private LocalDateTime createTime;

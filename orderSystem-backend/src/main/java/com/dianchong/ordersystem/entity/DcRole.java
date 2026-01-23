@@ -17,6 +17,7 @@ public class DcRole {
     private String roleName;
     private Boolean status;
     private String remark;
+    private String highlightColor;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

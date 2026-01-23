@@ -25,13 +25,14 @@
 
     <insert id="insertRole" parameterType="com.dianchong.ordersystem.entity.DcRole"
     useGeneratedKeys="true" keyProperty="roleId">
-        INSERT INTO DC_ROLE (ROLE_NAME, STATUS, REMARK, CREATE_TIME, UPDATE_TIME)
-        VALUES (#{roleName}, #{status} , #{remark}, NOW(), NOW())
+        INSERT INTO DC_ROLE (ROLE_NAME, HIGHLIGHT_COLOR, STATUS, REMARK, CREATE_TIME, UPDATE_TIME)
+        VALUES (#{roleName}, #{highlightColor}, #{status} , #{remark}, NOW(), NOW())
     </insert>
     
     <update id="updateRole" parameterType="com.dianchong.ordersystem.entity.DcRole">
         UPDATE DC_ROLE
         SET ROLE_NAME = #{roleName},
+            HIGHLIGHT_COLOR = #{highlightColor},
             STATUS = #{status},
             REMARK = #{remark},
             UPDATE_TIME = NOW()

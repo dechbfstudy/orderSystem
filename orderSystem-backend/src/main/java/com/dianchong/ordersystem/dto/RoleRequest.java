@@ -12,6 +12,7 @@ public class RoleRequest {
 
     @NotNull
     private String roleName;
+    private String highlightColor;
     private String remark;
     private Boolean status;
 

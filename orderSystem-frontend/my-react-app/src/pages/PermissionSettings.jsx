@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Col, Form, Input, message, Row, Space, Switch, Table} from 'antd';
+import {Button, Card, Col, Form, Input, message, Row, Space, Switch, Table, Tag} from 'antd';
 import {EditOutlined, EyeOutlined, PlusOutlined, ReloadOutlined, SearchOutlined} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import {enableOrDisableRole, getRoleList} from "../api/auth.js";
@@ -97,7 +97,10 @@ const PermissionSettings = () => {
             title: '角色名称',
             dataIndex: 'roleName',
             key: 'roleName',
-            render: (text) => <span style={{ fontWeight: 'bold' }}>{text}</span>
+            render: (text, record, index) =>
+                <Tag color={record.highlightColor}>
+                    {text}
+                </Tag>
         },
         {
             title: '描述',

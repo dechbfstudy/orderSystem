@@ -46,6 +46,7 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
                 List<BigDecimal> permissionIds = rolePermissionMapper.queryLeafPermissionIdsByRoleId(dcRole.getRoleId());
                 RoleResponse response = new RoleResponse(
                         dcRole.getRoleId(),
+                        dcRole.getHighlightColor(),
                         dcRole.getRoleName(),
                         dcRole.getRemark(),
                         dcRole.getCreateTime(),
@@ -70,6 +71,7 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
         List<BigDecimal> permissionIds = rolePermissionMapper.queryLeafPermissionIdsByRoleId(dcRole.getRoleId());
         return new RoleResponse(
                 dcRole.getRoleId(),
+                dcRole.getHighlightColor(),
                 dcRole.getRoleName(),
                 dcRole.getRemark(),
                 dcRole.getCreateTime(),

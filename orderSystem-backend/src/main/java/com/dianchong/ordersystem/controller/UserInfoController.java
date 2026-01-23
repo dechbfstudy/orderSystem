@@ -1,16 +1,14 @@
 package com.dianchong.ordersystem.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/user")
 public class UserInfoController {
-    @GetMapping("/hello")
-    public String hello(){
-        return "hello world";
-    }
 
-    @GetMapping("/getUserInfo")
+    @GetMapping("/list")
     public String getUserInfo(){
         return "hello world";
     }
