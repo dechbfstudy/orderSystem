@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {ColorPicker, Form, Input, message, Modal, Spin, Switch, Tree} from "antd";
 import {createRole, getPermissionTree, updateRole} from "../api/auth.js";
-import {data} from "react-router-dom";
 
 const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, updateTbData}) => {
     const [modalForm] = Form.useForm();

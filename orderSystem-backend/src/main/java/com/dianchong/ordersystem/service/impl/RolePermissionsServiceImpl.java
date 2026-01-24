@@ -35,10 +35,10 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
     private DcRolePermissionMapper rolePermissionMapper;
 
     @Override
-    public List<RoleResponse> getRoleList(String roleName) {
+    public List<RoleResponse> getRoleList(String roleName, Boolean status) {
         List<RoleResponse> roleListResponse = new ArrayList<>();
 
-        List<DcRole> dcRoles = roleMapper.queryByRoleName(roleName);
+        List<DcRole> dcRoles = roleMapper.queryByRoleName(roleName, status);
 
 
         if (!CollectionUtils.isEmpty(dcRoles)){

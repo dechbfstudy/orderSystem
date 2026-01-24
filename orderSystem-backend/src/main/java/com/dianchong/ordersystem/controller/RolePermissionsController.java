@@ -20,8 +20,9 @@ public class RolePermissionsController {
     private RolePermissionsService rolePermissionsService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<RoleResponse>> getRoleList(@RequestParam(value = "roleName", required = false) String roleName){
-        List<RoleResponse> roleListResponse = rolePermissionsService.getRoleList(roleName);
+    public ResponseEntity<List<RoleResponse>> getRoleList(@RequestParam(value = "roleName", required = false) String roleName,
+                                                          @RequestParam(value = "status", required = false) Boolean status){
+        List<RoleResponse> roleListResponse = rolePermissionsService.getRoleList(roleName, status);
         return ResponseEntity.ok(roleListResponse);
     }
 

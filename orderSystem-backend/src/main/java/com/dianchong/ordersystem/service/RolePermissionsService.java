@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface RolePermissionsService {
-    List<RoleResponse> getRoleList(String roleName);
+    List<RoleResponse> getRoleList(String roleName, Boolean status);
 
     RoleResponse edRoleStatus(BigDecimal roleId, Boolean status);
 

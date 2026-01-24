@@ -1,7 +1,7 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react';
 import { Form, Input, Button, Checkbox, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import {UserOutlined, LockOutlined, EyeTwoTone, EyeInvisibleOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppTheme } from '../context/ThemeContext';
 import { login } from '../api/auth';
@@ -45,7 +45,7 @@ const LoginPage = () => {
                         <Input prefix={<UserOutlined />} placeholder={t('用户名')} />
                     </Form.Item>
                     <Form.Item name="password" rules={[{ required: true, message: t('请输入密码!')}]}>
-                        <Input prefix={<LockOutlined />} type="password" placeholder={t('密码')} />
+                        <Input.Password prefix={<LockOutlined />} placeholder={t('密码')} />
                     </Form.Item>
                     <Form.Item>
                         <Form.Item name="rememberMe" valuePropName="checked" noStyle>

@@ -1,5 +1,6 @@
 package com.dianchong.ordersystem.controller;
 
+import com.dianchong.ordersystem.dto.RoleResponse;
 import com.dianchong.ordersystem.dto.UserResponse;
 import com.dianchong.ordersystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,4 @@ public class UserInfoController {
         List<UserResponse> userList = userService.getUserList(username, account, status);
         return ResponseEntity.ok(userList);
     }
-
-
 }

@@ -9,6 +9,9 @@
             <if test="roleName != null and roleName != ''">
                 ROLE_NAME like CONCAT ('%', #{roleName}, '%')
             </if>
+            <if test="status != null">
+                and STATUS = #{status}
+            </if>
         </where>
         order by CREATE_TIME desc
     </select>

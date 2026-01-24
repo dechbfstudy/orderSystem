@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Col, Form, Input, message, Row, Space, Switch, Table, Tag} from 'antd';
+import {Button, Card, Col, Form, Input, message, Row, Select, Space, Switch, Table, Tag} from 'antd';
 import {EditOutlined, EyeOutlined, PlusOutlined, ReloadOutlined, SearchOutlined} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import {enableOrDisableRole, getRoleList} from "../api/auth.js";
@@ -164,6 +164,14 @@ const PermissionSettings = () => {
                         <Col>
                             <Form.Item label="角色名称" name="roleName" style={{ margin: 0 }}>
                                 <Input placeholder="输入角色名称" allowClear style={{ width: 200 }} loading={loading} disabled={loading}/>
+                            </Form.Item>
+                        </Col>
+                        <Col>
+                            <Form.Item label="状态" name="status" style={{ margin: 0 }}>
+                                <Select placeholder="全部状态" allowClear style={{ width: 120 }} disabled={loading} loading={loading}>
+                                    <Select.Option value={1}>启用</Select.Option>
+                                    <Select.Option value={0}>禁用</Select.Option>
+                                </Select>
                             </Form.Item>
                         </Col>
                         <Col>

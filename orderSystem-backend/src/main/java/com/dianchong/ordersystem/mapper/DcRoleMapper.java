@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface DcRoleMapper {
-    List<DcRole> queryByRoleName(String roleName);
+    List<DcRole> queryByRoleName(String roleName,Boolean status);
 
     DcRole queryByRoleId(BigDecimal roleId);
 

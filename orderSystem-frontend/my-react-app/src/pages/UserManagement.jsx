@@ -11,18 +11,8 @@ import {
 } from '@ant-design/icons';
 import {getRoleList, getUserList} from "../api/auth.js";
 import dayjs from "dayjs";
-
-// 1. 模拟初始数据
-const MOCK_DATA = Array.from({ length: 20 }).map((_, i) => ({
-    key: i + 1,
-    username: `用户_${i + 1}`,
-    account: `admin_00${i + 1}`,
-    role: i % 3 === 0 ? 'admin' : 'user',
-    createTime: `2023-01-${String(i % 28 + 1).padStart(2, '0')} 10:00:00`,
-    lastLoginTime: `2023-06-${String(i % 28 + 1).padStart(2, '0')} 14:30:00`,
-    loginCount: Math.floor(Math.random() * 500),
-    status: Math.random() > 0.3, // true: 启用, false: 禁用
-}));
+import RoleModal from "../modals/RoleModal.jsx";
+import UserModal from "../modals/UserModel.jsx";
 
 const UserManagement = () => {
     const [searchForm] = Form.useForm();
@@ -34,10 +24,10 @@ const UserManagement = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('新增用户');
-    const [modalLoading, setModalLoading] = useState(false);
-    const [editingKey, setEditingKey] = useState(null);
 
     const [switchLoading, setSwitchLoading] = useState({});
+
+    const [currentRecord, setCurrentRecord] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -79,7 +69,7 @@ const UserManagement = () => {
     };
 
     const handleAdd = () => {
-        setEditingKey(null);
+        setCurrentRecord(null);
         setModalTitle('新增用户');
         setIsModalOpen(true);
         modalForm.resetFields();
@@ -90,7 +80,7 @@ const UserManagement = () => {
     };
 
     const handleEdit = (record) => {
-        setEditingKey(record.key);
+        setCurrentRecord(record);
         setModalTitle('编辑用户');
         setIsModalOpen(true);
         modalForm.setFieldsValue({
@@ -197,7 +187,7 @@ const UserManagement = () => {
             dataIndex: 'loginCount',
             key: 'loginCount',
             align: 'center',
-            render: (count) => <Tag variant='solid' color='green'>{count}</Tag>,
+            render: count => <Tag color={count > 10 ? 'green' : 'default'}>{count}</Tag>,
         },
         {
             title: '状态',
@@ -315,6 +305,13 @@ const UserManagement = () => {
             </Card>
 
             {/* 3. 新增/编辑 弹窗 */}
+            <UserModal
+                modalTitle={modalTitle}
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+                currentRecord={currentRecord}
+                updateTbData={() => handleSearch()}
+            />
 
         </div>
     );
