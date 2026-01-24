@@ -100,6 +100,7 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
             open={isModalOpen}
             onOk={() => handleModalSubmit()}
             onCancel={() => setIsModalOpen(false)}
+            // confirmLoading={modalLoading}
             loading={modalLoading}
             width={600}
             afterClose={() => updateTbData()}

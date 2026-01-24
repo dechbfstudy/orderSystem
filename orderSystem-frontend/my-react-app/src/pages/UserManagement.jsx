@@ -7,7 +7,7 @@ import {
     SearchOutlined,
     ReloadOutlined,
     UserAddOutlined,
-    EditOutlined
+    EditOutlined, RedoOutlined
 } from '@ant-design/icons';
 import {getRoleList, getUserList} from "../api/auth.js";
 import dayjs from "dayjs";
@@ -220,14 +220,25 @@ const UserManagement = () => {
             align: 'center',
             width: 100,
             render: (_, record) => (
-                <Button
-                    type="link"
-                    size="small"
-                    icon={<EditOutlined />}
-                    onClick={() => handleEdit(record)}
-                >
-                    编辑
-                </Button>
+                <Space>
+                    <Button
+                        type="link"
+                        size="small"
+                        icon={<EditOutlined />}
+                        onClick={() => handleEdit(record)}
+                    >
+                        编辑
+                    </Button>
+                    <Button
+                        danger
+                        type="link"
+                        size="small"
+                        icon={<RedoOutlined />}
+                        onClick={() => handleEdit(record)}
+                    >
+                        重置密码
+                    </Button>
+                </Space>
             ),
         },
     ];
@@ -304,52 +315,7 @@ const UserManagement = () => {
             </Card>
 
             {/* 3. 新增/编辑 弹窗 */}
-            <Modal
-                title={modalTitle}
-                open={isModalOpen}
-                onOk={handleModalOk}
-                onCancel={() => setIsModalOpen(false)}
-                confirmLoading={modalLoading}
-                width={500}
-                destroyOnClose
-            >
-                <Form form={modalForm} layout="vertical" preserve={false}>
-                    <Form.Item
-                        name="username"
-                        label="用户名"
-                        rules={[{ required: true, message: '请输入用户名' }]}
-                    >
-                        <Input placeholder="请输入用户名" />
-                    </Form.Item>
 
-                    <Form.Item
-                        name="account"
-                        label="登录账号"
-                        rules={[{ required: true, message: '请输入登录账号' }]}
-                    >
-                        <Input placeholder="请输入账号" disabled={editingKey !== null} />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="role"
-                        label="用户角色"
-                        rules={[{ required: true, message: '请选择角色' }]}
-                    >
-                        <Radio.Group>
-                            <Radio value="user">普通用户</Radio>
-                            <Radio value="admin">管理员</Radio>
-                        </Radio.Group>
-                    </Form.Item>
-
-                    <Form.Item
-                        name="status"
-                        label="账户状态"
-                        valuePropName="checked"
-                    >
-                        <Switch checkedChildren="启用" unCheckedChildren="禁用" />
-                    </Form.Item>
-                </Form>
-            </Modal>
         </div>
     );
 };
