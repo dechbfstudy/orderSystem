@@ -9,6 +9,8 @@ import {
     UserAddOutlined,
     EditOutlined
 } from '@ant-design/icons';
+import {getRoleList, getUserList} from "../api/auth.js";
+import dayjs from "dayjs";
 
 // 1. 模拟初始数据
 const MOCK_DATA = Array.from({ length: 20 }).map((_, i) => ({
@@ -43,23 +45,14 @@ const UserManagement = () => {
 
     const fetchData = (params = {}) => {
         setLoading(true);
-        setTimeout(() => {
-            let filteredData = [...MOCK_DATA];
-
-            if (params.username) {
-                filteredData = filteredData.filter(item => item.username.includes(params.username));
-            }
-            if (params.account) {
-                filteredData = filteredData.filter(item => item.account.includes(params.account));
-            }
-            if (params.status !== undefined) {
-                const queryStatus = params.status === 1;
-                filteredData = filteredData.filter(item => item.status === queryStatus);
-            }
-
-            setData(filteredData);
+        getUserList(params).then((res) => {
+            setData(res);
+        }).catch(e => {
+            console.error('获取用户列表失败', e);
+            message.error('获取用户列表失败');
+        }).finally( () => {
             setLoading(false);
-        }, 500);
+        });
     };
 
     const handleSearch = () => {
@@ -169,37 +162,42 @@ const UserManagement = () => {
         },
         {
             title: '账号',
-            dataIndex: 'account',
-            key: 'account',
+            dataIndex: 'userAccount',
+            key: 'userAccount',
         },
         {
             title: '角色',
-            dataIndex: 'role',
-            key: 'role',
-            render: (role) => (
-                <Tag color={role === 'admin' ? 'gold' : 'cyan'}>
-                    {role === 'admin' ? '管理员' : '普通用户'}
+            dataIndex: 'roleName',
+            key: 'roleName',
+            render: (text, record, index) =>
+                <Tag color={record.highlightColor}>
+                    {text}
                 </Tag>
-            )
         },
         {
             title: '创建时间',
             dataIndex: 'createTime',
             key: 'createTime',
             width: 180,
+            render: (text) => {
+                return text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '-';
+            }
         },
         {
             title: '最后登录',
             dataIndex: 'lastLoginTime',
             key: 'lastLoginTime',
             width: 180,
+            render: (text) => {
+                return text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '-';
+            }
         },
         {
             title: '登录次数',
             dataIndex: 'loginCount',
             key: 'loginCount',
             align: 'center',
-            render: (count) => <Tag bordered={false}>{count}</Tag>,
+            render: (count) => <Tag variant='solid' color='green'>{count}</Tag>,
         },
         {
             title: '状态',
@@ -245,19 +243,19 @@ const UserManagement = () => {
                     <Row gutter={[24, 16]} align="middle">
                         <Col>
                             <Form.Item label="用户名" name="username" style={{ margin: 0 }}>
-                                <Input placeholder="模糊搜索" allowClear style={{ width: 160 }} />
+                                <Input placeholder="模糊搜索" allowClear style={{ width: 160 }} disabled={loading} loading={loading}/>
                             </Form.Item>
                         </Col>
 
                         <Col>
                             <Form.Item label="账号" name="account" style={{ margin: 0 }}>
-                                <Input placeholder="精确搜索" allowClear style={{ width: 160 }} />
+                                <Input placeholder="精确搜索" allowClear style={{ width: 160 }} disabled={loading} loading={loading}/>
                             </Form.Item>
                         </Col>
 
                         <Col>
                             <Form.Item label="状态" name="status" style={{ margin: 0 }}>
-                                <Select placeholder="全部状态" allowClear style={{ width: 120 }}>
+                                <Select placeholder="全部状态" allowClear style={{ width: 120 }} disabled={loading} loading={loading}>
                                     <Select.Option value={1}>启用</Select.Option>
                                     <Select.Option value={0}>禁用</Select.Option>
                                 </Select>
@@ -284,7 +282,7 @@ const UserManagement = () => {
             <Card
                 title="用户列表"
                 extra={
-                    <Button type="primary" icon={<UserAddOutlined />} onClick={handleAdd}>
+                    <Button type="primary" icon={<UserAddOutlined />} onClick={handleAdd} loading={loading}>
                         新增用户
                     </Button>
                 }

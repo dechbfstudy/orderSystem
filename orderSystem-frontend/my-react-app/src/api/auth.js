@@ -3,6 +3,9 @@ import request from "../utils/request.js";
 
 const API_URL = {
     LOGIN: '/auth/login',
+
+    USER_LIST: '/user/list',
+
     ROLE_LIST: '/system/role-permissions/list',
     ED_ROLE: '/system/role-permissions/ed-role',
     PERMISSION_TREE: '/system/role-permissions/permission-tree',
@@ -19,6 +22,14 @@ export function login(data) {
         url: API_URL.LOGIN,
         method: 'post',
         data
+    });
+}
+
+export function getUserList(data) {
+    return request({
+        url: API_URL.USER_LIST,
+        method: 'get',
+        params: data
     });
 }
 

@@ -3,8 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dianchong.ordersystem.mapper.DcUserMapper">
-    <select id="queryAllUsers" resultType="com.dianchong.ordersystem.entity.DcUser">
-        select * from dc_user
+    <select id="queryUserInfo" resultType="com.dianchong.ordersystem.dto.UserResponse">
+        select
+        u.USER_ID as 'key', u.USERNAME, u.USER_ACCOUNT,
+        r.ROLE_NAME, r.HIGHLIGHT_COLOR, u.CREATE_TIME,
+        u.LAST_LOGIN_TIME, u.LOGIN_COUNT, u.IS_DISABLED as status
+        from dc_user u
+        join dc_user_role ur on u.user_id = ur.user_id
+        join dc_role r on ur.role_id = r.role_id
+        <where>
+            <if test="username != null and username != ''">
+                u.username like CONCAT ('%', #{username}, '%')
+            </if>
+            <if test="userAccount != null and userAccount != ''">
+                u.user_account = #{userAccount}
+            </if>
+            <if test="status != null">
+                and u.is_disabled = #{status}
+            </if>
+        </where>
     </select>
 
     <select id="queryByAccount" resultType="com.dianchong.ordersystem.entity.DcUser">

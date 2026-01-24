@@ -163,7 +163,7 @@ const PermissionSettings = () => {
                     <Row gutter={[24, 16]} align="middle">
                         <Col>
                             <Form.Item label="角色名称" name="roleName" style={{ margin: 0 }}>
-                                <Input placeholder="输入角色名称" allowClear style={{ width: 200 }} />
+                                <Input placeholder="输入角色名称" allowClear style={{ width: 200 }} loading={loading} disabled={loading}/>
                             </Form.Item>
                         </Col>
                         <Col>
