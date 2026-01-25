@@ -13,6 +13,7 @@ import {getRoleList, getUserList} from "../api/auth.js";
 import dayjs from "dayjs";
 import RoleModal from "../modals/RoleModal.jsx";
 import UserModal from "../modals/UserModel.jsx";
+import UserRestPasswordModel from "../modals/UserRestPasswordModel.jsx";
 
 const UserManagement = () => {
     const [searchForm] = Form.useForm();
@@ -23,7 +24,8 @@ const UserManagement = () => {
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalTitle, setModalTitle] = useState('新增用户');
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
 
     const [switchLoading, setSwitchLoading] = useState({});
 
@@ -91,51 +93,56 @@ const UserManagement = () => {
         });
     };
 
-    const handleModalOk = async () => {
-        try {
-            const values = await modalForm.validateFields();
-            setModalLoading(true);
-
-            setTimeout(() => {
-                if (editingKey === null) {
-                    const newUser = {
-                        key: Date.now(),
-                        username: values.username,
-                        account: values.account,
-                        role: values.role,
-                        status: values.status,
-                        createTime: new Date().toLocaleString(),
-                        lastLoginTime: '-',
-                        loginCount: 0,
-                    };
-                    setData([newUser, ...data]);
-                    message.success('新增用户成功');
-                } else {
-                    const newData = data.map((item) => {
-                        if (item.key === editingKey) {
-                            return {
-                                ...item,
-                                username: values.username,
-                                account: values.account,
-                                role: values.role,
-                                status: values.status
-                            };
-                        }
-                        return item;
-                    });
-                    setData(newData);
-                    message.success('更新用户信息成功');
-                }
-
-                setModalLoading(false);
-                setIsModalOpen(false);
-                modalForm.resetFields();
-            }, 800);
-
-        } catch (error) {
-            console.log('Validation Failed:', error);
-        }
+    const handleRestPassword = (record) => {
+        setCurrentRecord(record);
+        setIsResetModalOpen(true);
     };
+
+    // const handleModalOk = async () => {
+    //     try {
+    //         const values = await modalForm.validateFields();
+    //         setModalLoading(true);
+    //
+    //         setTimeout(() => {
+    //             if (editingKey === null) {
+    //                 const newUser = {
+    //                     key: Date.now(),
+    //                     username: values.username,
+    //                     account: values.account,
+    //                     role: values.role,
+    //                     status: values.status,
+    //                     createTime: new Date().toLocaleString(),
+    //                     lastLoginTime: '-',
+    //                     loginCount: 0,
+    //                 };
+    //                 setData([newUser, ...data]);
+    //                 message.success('新增用户成功');
+    //             } else {
+    //                 const newData = data.map((item) => {
+    //                     if (item.key === editingKey) {
+    //                         return {
+    //                             ...item,
+    //                             username: values.username,
+    //                             account: values.account,
+    //                             role: values.role,
+    //                             status: values.status
+    //                         };
+    //                     }
+    //                     return item;
+    //                 });
+    //                 setData(newData);
+    //                 message.success('更新用户信息成功');
+    //             }
+    //
+    //             setModalLoading(false);
+    //             setIsModalOpen(false);
+    //             modalForm.resetFields();
+    //         }, 800);
+    //
+    //     } catch (error) {
+    //         console.log('Validation Failed:', error);
+    //     }
+    // };
 
     const columns = [
         {
@@ -224,7 +231,7 @@ const UserManagement = () => {
                         type="link"
                         size="small"
                         icon={<RedoOutlined />}
-                        onClick={() => handleEdit(record)}
+                        onClick={() => handleRestPassword(record)}
                     >
                         重置密码
                     </Button>
@@ -235,10 +242,6 @@ const UserManagement = () => {
 
     return (
         <div style={{ padding: '0' }}>
-            {/*
-         1. 搜索区域
-         修改点：移除 justify="center" (默认为 start/left)，保留 align="middle"
-      */}
             <Card style={{ marginBottom: 16 }}>
                 <Form form={searchForm} onFinish={handleSearch}>
                     <Row gutter={[24, 16]} align="middle">
@@ -279,7 +282,6 @@ const UserManagement = () => {
                 </Form>
             </Card>
 
-            {/* 2. 表格区域 */}
             <Card
                 title="用户列表"
                 extra={
@@ -304,13 +306,18 @@ const UserManagement = () => {
                 />
             </Card>
 
-            {/* 3. 新增/编辑 弹窗 */}
             <UserModal
                 modalTitle={modalTitle}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
                 currentRecord={currentRecord}
                 updateTbData={() => handleSearch()}
+            />
+
+            <UserRestPasswordModel
+                isModalOpen={isResetModalOpen}
+                setIsModalOpen={setIsResetModalOpen}
+                currentRecord={currentRecord}
             />
 
         </div>

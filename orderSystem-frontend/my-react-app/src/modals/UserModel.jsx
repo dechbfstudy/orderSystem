@@ -1,10 +1,28 @@
-import {Form, Input, Modal, Switch} from "antd";
-import {useState} from "react";
+import {Form, Input, Modal, Select, Switch} from "antd";
+import {useEffect, useState} from "react";
+import {getRoleList} from "../api/auth.js";
 
 const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, updateTbData}) => {
     const [modalForm] = Form.useForm();
 
     const [modalLoading, setModalLoading] = useState(false);
+
+    const [roleList, setRoleList] = useState([]);
+    const [selectLoading, setSelectLoading] = useState(false)
+
+    useEffect(() => {
+        if (!isModalOpen) return;
+        setSelectLoading(true);
+        const params = {
+            "status": true
+        }
+        getRoleList(params).then(res => {
+            setRoleList(res);
+        }).finally(() => {
+            setSelectLoading(false);
+        })
+
+    },[isModalOpen, currentRecord])
 
     const handleModalSubmit = async () => {
 
@@ -50,7 +68,16 @@ const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                     label="用户角色"
                     rules={[{ required: true, message: '请选择角色' }]}
                 >
-
+                    <Select placeholder="请选择角色"
+                            loading={selectLoading}
+                            disabled={selectLoading}
+                            allowClear
+                            showSearch={{ optionFilterProp: 'children'}}
+                    >
+                        {roleList.map(item => {
+                            return <Select.Option key={item.key} value={item.key}>{item.roleName}</Select.Option>
+                        })}
+                    </Select>
                 </Form.Item>
 
                 <Form.Item
