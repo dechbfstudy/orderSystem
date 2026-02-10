@@ -11,7 +11,7 @@ const RoleDetailInfoModal = ({isDetailModalOpen, setIsDetailModalOpen, currentRe
     useEffect(() => {
         if (!isDetailModalOpen) return;
         getPermissionTree().then(r => {
-            setPermissionTreeData(r);
+            setPermissionTreeData(r.data);
         }).catch(err => {
             console.error('加载权限树失败：', err);
             message.error('加载权限树失败，请联系管理员');

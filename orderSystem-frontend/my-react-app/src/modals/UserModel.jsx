@@ -1,6 +1,6 @@
-import {Form, Input, Modal, Select, Switch} from "antd";
+import {Form, Input, message, Modal, Select, Switch} from "antd";
 import {useEffect, useState} from "react";
-import {getRoleList} from "../api/auth.js";
+import {createUser, getRoleList} from "../api/auth.js";
 
 const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, updateTbData}) => {
     const [modalForm] = Form.useForm();
@@ -13,19 +13,44 @@ const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
     useEffect(() => {
         if (!isModalOpen) return;
         setSelectLoading(true);
+        //获取权限列表
         const params = {
             "status": true
         }
         getRoleList(params).then(res => {
-            setRoleList(res);
+            setRoleList(res.data);
         }).finally(() => {
             setSelectLoading(false);
         })
+        //判断回填参数
+        if (currentRecord) {
+
+        }else{
+            modalForm.resetFields();
+            modalForm.setFieldsValue({status: true});
+        }
 
     },[isModalOpen, currentRecord])
 
     const handleModalSubmit = async () => {
+        const values = await modalForm.validateFields();
+        console.log('values:', values)
+        setModalLoading(true);
+        if (currentRecord) {
 
+        }else{
+            createUser(values).then(r => {
+                if (r === 'success') {
+                    message.success('用户创建成功');
+                    setModalLoading(false);
+                    setIsModalOpen(false);
+                }
+            }).catch(e =>{
+                message.error('操作失败：' + e.message);
+                setModalLoading(false);
+                setIsModalOpen(false);
+            })
+        }
     }
 
     return(
@@ -34,7 +59,7 @@ const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
             open={isModalOpen}
             onOk={handleModalSubmit}
             onCancel={() => setIsModalOpen(false)}
-            confirmLoading={modalLoading}
+            loading={modalLoading}
             width={500}
         >
             <Form form={modalForm} layout="vertical" preserve={false}>
@@ -47,7 +72,7 @@ const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                 </Form.Item>
 
                 <Form.Item
-                    name="account"
+                    name="userAccount"
                     label="登录账号"
                     rules={[{ required: true, message: '请输入登录账号' }]}
                 >
@@ -64,7 +89,7 @@ const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                 </Form.Item>
 
                 <Form.Item
-                    name="role"
+                    name="roleId"
                     label="用户角色"
                     rules={[{ required: true, message: '请选择角色' }]}
                 >

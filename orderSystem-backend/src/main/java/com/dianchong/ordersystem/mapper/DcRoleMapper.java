@@ -8,9 +8,11 @@ import java.util.List;
 
 @Mapper
 public interface DcRoleMapper {
-    List<DcRole> queryByRoleName(String roleName,Boolean status);
+    List<DcRole> queryByConcatRoleNameAndStatus(String roleName,Boolean status);
 
     DcRole queryByRoleId(BigDecimal roleId);
+
+    DcRole queryByRoleName(String roleName);
 
     int updateRoleStatusById(BigDecimal roleId, Boolean status);
 

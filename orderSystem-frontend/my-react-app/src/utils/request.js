@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {clearStorage, getAccessToken, getRefreshToken, isRememberMe, setTokens} from "./storage.js";
+import {message} from "antd";
 
 const service = axios.create({
     baseURL: 'http://localhost:8080',
@@ -30,9 +31,10 @@ service.interceptors.request.use(
 
 // === 响应拦截器 ===
 service.interceptors.response.use(
-    (response) =>
-        response.data
-    ,
+    (response) => {
+        console.log(response)
+        return response.data
+    },
     async (error) => {
         console.log('响应拦截器错误：', "YES")
         console.log('响应拦截器错误error：', error)
@@ -40,12 +42,21 @@ service.interceptors.response.use(
 
         console.log('响应拦截器错误originalRequest：', originalRequest)
 
-        if (!error.response) return Promise.reject(error);
-
-        originalRequest._retryCount = originalRequest._retryCount || 0;
-        if (originalRequest._retryCount >= MAX_RETRY_COUNT) {
+        // 如果没有响应或者不是401错误，直接reject
+        if (!error.response || error.response.status !== 401) {
             return Promise.reject(error);
         }
+
+        // 检查是否已经重试过最大次数
+        originalRequest._retryCount = originalRequest._retryCount || 0;
+        console.log('响应拦截器错误originalRequest._retryCount：', originalRequest._retryCount)
+        if (originalRequest._retryCount >= MAX_RETRY_COUNT) {
+            message.error("请求失败，请退出登录后重试");
+            return Promise.reject(error);
+        }
+
+        // 如果正在刷新token，则将请求加入队列等待
+        console.log('响应拦截器错误isRefreshing：', isRefreshing)
         if (isRefreshing) {
             return new Promise((resolve) => {
                 requestsQueue.push((newToken) => {
@@ -55,6 +66,7 @@ service.interceptors.response.use(
             });
         }
 
+        // 开始刷新token流程
         originalRequest._retryCount += 1;
         isRefreshing = true;
 
@@ -77,15 +89,17 @@ service.interceptors.response.use(
             // 保存新 Token
             setTokens(data.accessToken, data.refreshToken, remember);
 
+            // 处理队列中的请求
             requestsQueue.forEach((cb) => cb(data.accessToken));
             requestsQueue = [];
 
+            // 重新发送原始请求
             originalRequest.headers['Authorization'] = 'Bearer ' + data.accessToken;
             return service(originalRequest);
 
         } catch (refreshError) {
+            // 刷新失败，清空队列并跳转到登录页
             requestsQueue = [];
-            // 清除所有 Token
             clearStorage();
             const currentPath = window.location.pathname;
             if (currentPath !== '/login') {
@@ -95,8 +109,6 @@ service.interceptors.response.use(
         } finally {
             isRefreshing = false;
         }
-
-        return Promise.reject(error);
     }
 );
 

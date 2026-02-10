@@ -37,4 +37,10 @@
             login_count = COALESCE(login_count, 0) + 1
         WHERE USER_ACCOUNT = #{account}
     </update>
+
+    <insert id="insertUser" parameterType="com.dianchong.ordersystem.entity.DcUser"
+            useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO dc_user (USERNAME, USER_ACCOUNT, PASSWORD, IS_DISABLED, CREATE_TIME, UPDATE_TIME)
+        VALUES (#{username}, #{userAccount}, #{password}, #{isDisabled}, NOW(), NOW())
+    </insert>
 </mapper>

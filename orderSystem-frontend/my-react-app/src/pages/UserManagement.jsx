@@ -38,7 +38,8 @@ const UserManagement = () => {
     const fetchData = (params = {}) => {
         setLoading(true);
         getUserList(params).then((res) => {
-            setData(res);
+            console.log('res:', res)
+            setData(res.data);
         }).catch(e => {
             console.error('获取用户列表失败', e);
             message.error('获取用户列表失败');
@@ -97,52 +98,6 @@ const UserManagement = () => {
         setCurrentRecord(record);
         setIsResetModalOpen(true);
     };
-
-    // const handleModalOk = async () => {
-    //     try {
-    //         const values = await modalForm.validateFields();
-    //         setModalLoading(true);
-    //
-    //         setTimeout(() => {
-    //             if (editingKey === null) {
-    //                 const newUser = {
-    //                     key: Date.now(),
-    //                     username: values.username,
-    //                     account: values.account,
-    //                     role: values.role,
-    //                     status: values.status,
-    //                     createTime: new Date().toLocaleString(),
-    //                     lastLoginTime: '-',
-    //                     loginCount: 0,
-    //                 };
-    //                 setData([newUser, ...data]);
-    //                 message.success('新增用户成功');
-    //             } else {
-    //                 const newData = data.map((item) => {
-    //                     if (item.key === editingKey) {
-    //                         return {
-    //                             ...item,
-    //                             username: values.username,
-    //                             account: values.account,
-    //                             role: values.role,
-    //                             status: values.status
-    //                         };
-    //                     }
-    //                     return item;
-    //                 });
-    //                 setData(newData);
-    //                 message.success('更新用户信息成功');
-    //             }
-    //
-    //             setModalLoading(false);
-    //             setIsModalOpen(false);
-    //             modalForm.resetFields();
-    //         }, 800);
-    //
-    //     } catch (error) {
-    //         console.log('Validation Failed:', error);
-    //     }
-    // };
 
     const columns = [
         {

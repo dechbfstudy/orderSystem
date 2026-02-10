@@ -5,11 +5,12 @@ const API_URL = {
     LOGIN: '/auth/login',
 
     USER_LIST: '/user/list',
+    CREATE_USER: '/user/create',
 
     ROLE_LIST: '/system/role-permissions/list',
     ED_ROLE: '/system/role-permissions/ed-role',
     PERMISSION_TREE: '/system/role-permissions/permission-tree',
-    CREATE_ROLE: '/system/role-permissions/credit',
+    CREATE_ROLE: '/system/role-permissions/create',
     UPDATE_ROLE: '/system/role-permissions/edit',
 };
 
@@ -38,6 +39,14 @@ export function getRoleList(data) {
         url: API_URL.ROLE_LIST,
         method: 'get',
         params: data
+    });
+}
+
+export function createUser(data) {
+    return request({
+        url: API_URL.CREATE_USER,
+        method: 'post',
+        data
     });
 }
 

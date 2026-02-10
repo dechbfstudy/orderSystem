@@ -20,8 +20,8 @@ const LoginPage = () => {
         //调用登录接口
         try{
             const res = await login(values);
-
-            const { accessToken, refreshToken,username } = res;
+            console.log(res)
+            const { accessToken, refreshToken,username } = res.data;
 
             setTokens(accessToken, refreshToken, values.rememberMe);
             setUserInfo({username: username}, values.rememberMe);
@@ -39,7 +39,7 @@ const LoginPage = () => {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f2f5' }}>
-            <Card title={t('系统登录')} style={{ width: 400 }}>
+            <Card title={t('订单系统登录')} style={{ width: 400 }}>
                 <Form name="normal_login" initialValues={{ remember: true }} onFinish={handleLogin} size="large">
                     <Form.Item name="userAccount" rules={[{ required: true, message: t('请输入用户名!') }]}>
                         <Input prefix={<UserOutlined />} placeholder={t('用户名')} />

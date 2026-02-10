@@ -1,7 +1,7 @@
 package com.dianchong.ordersystem.filter;
 
 import com.dianchong.ordersystem.service.impl.UserDetailsServiceImpl;
-import com.dianchong.ordersystem.untils.JwtUtils;
+import com.dianchong.ordersystem.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

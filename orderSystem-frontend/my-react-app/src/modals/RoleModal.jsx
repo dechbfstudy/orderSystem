@@ -16,7 +16,7 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
     useEffect(() => {
         if (!isModalOpen) return;
         getPermissionTree().then(r => {
-            setPermissionTreeData(r);
+            setPermissionTreeData(r.data);
         }).catch(err => {
             console.error('加载权限树失败：', err);
             message.error('加载权限树失败，请联系管理员');
@@ -62,12 +62,16 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                 permissionIds: checkedKeys
             };
             createRole(requestBody).then(r => {
-                if (r === 'success') {
+                if (r.code === 200){
                     message.success('角色创建成功');
                     setModalLoading(false);
                     setIsModalOpen(false);
+                }else {
+                    message.error(r.message);
+                    setModalLoading(false);
                 }
             }).catch((e) =>{
+                console.log(e)
                 message.error('操作失败：' + e.message);
                 setModalLoading(false);
                 setIsModalOpen(false);
@@ -80,10 +84,13 @@ const RoleModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
                 permissionIds: checkedKeys
             };
             updateRole(requestBody).then(r => {
-                if (r === 'success') {
+                if (r.code === 200){
                     message.success('角色修改成功');
                     setModalLoading(false);
                     setIsModalOpen(false);
+                }else {
+                    message.error(r.message);
+                    setModalLoading(false);
                 }
             }).catch((e) =>{
                 message.error('操作失败：' + e.message);

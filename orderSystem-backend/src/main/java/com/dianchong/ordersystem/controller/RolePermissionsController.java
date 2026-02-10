@@ -1,5 +1,6 @@
 package com.dianchong.ordersystem.controller;
 
+import com.dianchong.ordersystem.common.ApiResponse;
 import com.dianchong.ordersystem.dto.EdRoleRequest;
 import com.dianchong.ordersystem.dto.PermissionTreeResponse;
 import com.dianchong.ordersystem.dto.RoleRequest;
@@ -7,7 +8,6 @@ import com.dianchong.ordersystem.dto.RoleResponse;
 import com.dianchong.ordersystem.service.RolePermissionsService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,33 +20,33 @@ public class RolePermissionsController {
     private RolePermissionsService rolePermissionsService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<RoleResponse>> getRoleList(@RequestParam(value = "roleName", required = false) String roleName,
-                                                          @RequestParam(value = "status", required = false) Boolean status){
+    public ApiResponse<List<RoleResponse>> getRoleList(@RequestParam(value = "roleName", required = false) String roleName,
+                                                       @RequestParam(value = "status", required = false) Boolean status){
         List<RoleResponse> roleListResponse = rolePermissionsService.getRoleList(roleName, status);
-        return ResponseEntity.ok(roleListResponse);
+        return ApiResponse.success(roleListResponse);
     }
 
     @GetMapping("/permission-tree")
-    public ResponseEntity<List<PermissionTreeResponse>> getPermissionTree(){
+    public ApiResponse<List<PermissionTreeResponse>> getPermissionTree(){
         List<PermissionTreeResponse> permissionTree = rolePermissionsService.getPermissionTree();
-        return ResponseEntity.ok(permissionTree);
+        return ApiResponse.success(permissionTree);
     }
 
     @PostMapping("/ed-role")
-    public ResponseEntity<RoleResponse> EDRole(@Valid @RequestBody EdRoleRequest edRoleRequest){
+    public ApiResponse<RoleResponse> EDRole(@Valid @RequestBody EdRoleRequest edRoleRequest){
         RoleResponse editRoleResponse = rolePermissionsService.edRoleStatus(edRoleRequest.getRoleId(), edRoleRequest.getStatus());
-        return ResponseEntity.ok(editRoleResponse);
+        return ApiResponse.success(editRoleResponse);
     }
 
-    @PostMapping("/credit")
-    public ResponseEntity<String> createRole(@Valid @RequestBody RoleRequest roleRequest){
+    @PostMapping("/create")
+    public ApiResponse<String> createRole(@Valid @RequestBody RoleRequest roleRequest){
         rolePermissionsService.createRole(roleRequest);
-        return ResponseEntity.ok("success");
+        return ApiResponse.success();
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<String> editRole(@Valid @RequestBody RoleRequest roleRequest){
+    public ApiResponse<String> editRole(@Valid @RequestBody RoleRequest roleRequest){
         rolePermissionsService.updateRole(roleRequest);
-        return ResponseEntity.ok("success");
+        return ApiResponse.success();
     }
 }

@@ -1,11 +1,13 @@
 package com.dianchong.ordersystem.service.impl;
 
+import com.dianchong.ordersystem.common.ResponseMsgStatus;
 import com.dianchong.ordersystem.dto.PermissionTreeResponse;
 import com.dianchong.ordersystem.dto.RoleDetailResponse;
 import com.dianchong.ordersystem.dto.RoleRequest;
 import com.dianchong.ordersystem.dto.RoleResponse;
 import com.dianchong.ordersystem.entity.DcPermission;
 import com.dianchong.ordersystem.entity.DcRole;
+import com.dianchong.ordersystem.exception.BusinessException;
 import com.dianchong.ordersystem.mapper.DcPermissionMapper;
 import com.dianchong.ordersystem.mapper.DcRoleMapper;
 import com.dianchong.ordersystem.mapper.DcRolePermissionMapper;
@@ -38,8 +40,7 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
     public List<RoleResponse> getRoleList(String roleName, Boolean status) {
         List<RoleResponse> roleListResponse = new ArrayList<>();
 
-        List<DcRole> dcRoles = roleMapper.queryByRoleName(roleName, status);
-
+        List<DcRole> dcRoles = roleMapper.queryByConcatRoleNameAndStatus(roleName, status);
 
         if (!CollectionUtils.isEmpty(dcRoles)){
             for (DcRole dcRole : dcRoles) {
@@ -62,12 +63,14 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
         return roleListResponse;
     }
 
+    @Transactional
     @Override
     public RoleResponse edRoleStatus(BigDecimal roleId, Boolean status) {
-        roleMapper.updateRoleStatusById(roleId, status);
-
         DcRole dcRole = roleMapper.queryByRoleId(roleId);
-        if (dcRole == null) return null;
+        if (dcRole == null) {
+            throw new BusinessException(ResponseMsgStatus.ROLE_NOT_EXIST);
+        };
+        roleMapper.updateRoleStatusById(roleId, status);
         List<BigDecimal> permissionIds = rolePermissionMapper.queryLeafPermissionIdsByRoleId(dcRole.getRoleId());
         return new RoleResponse(
                 dcRole.getRoleId(),
@@ -76,7 +79,7 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
                 dcRole.getRemark(),
                 dcRole.getCreateTime(),
                 dcRole.getUpdateTime(),
-                dcRole.getStatus(),
+                status,
                 permissionIds
         );
     }
@@ -95,8 +98,13 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
         return buildPermissionTree(permissionTreeResponses, BigDecimal.ZERO);
     }
 
+    @Transactional
     @Override
     public void createRole(RoleRequest roleRequest) {
+        DcRole existRole = roleMapper.queryByRoleName(roleRequest.getRoleName());
+        if (existRole != null){
+            throw new BusinessException(ResponseMsgStatus.ROLE_EXISTS);
+        }
         DcRole dcRole = new DcRole();
         BeanUtils.copyProperties(roleRequest, dcRole);
         roleMapper.insertRole(dcRole);
@@ -105,8 +113,14 @@ public class RolePermissionsServiceImpl implements RolePermissionsService {
         }
     }
 
+    @Transactional
     @Override
     public void updateRole(RoleRequest roleRequest) {
+        DcRole existRole = roleMapper.queryByRoleId(roleRequest.getRoleId());
+        if (existRole == null){
+            throw new BusinessException(ResponseMsgStatus.ROLE_NOT_EXIST);
+        }
+
         DcRole dcRole = new DcRole();
         BeanUtils.copyProperties(roleRequest, dcRole);
         roleMapper.updateRole(dcRole);

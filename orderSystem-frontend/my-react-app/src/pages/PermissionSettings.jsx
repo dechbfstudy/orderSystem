@@ -28,8 +28,7 @@ const PermissionSettings = () => {
         setLoading(true);
         try{
             const res = await getRoleList(params);
-            console.log(res)
-            setData(res);
+            setData(res.data);
         }  catch (error) {
             console.error('获取角色列表失败', error);
             message.error('获取角色列表失败');
@@ -56,11 +55,11 @@ const PermissionSettings = () => {
             };
 
             const res = await enableOrDisableRole(requestData);
-            const status = res.status;
+            const status = res.data.status;
             if (status !== checked){
                 message.error(checked ? `启用角色 [${record.roleName}] 失败` : `禁用角色 [${record.roleName}] 失败`);
             }else{
-                const newData = data.map(item => item.key === res.key ? { ...item, ...res} : item);
+                const newData = data.map(item => item.key === res.data.key ? { ...item, ...res.data} : item);
                 setData(newData);
                 message.success(`角色 [${record.roleName}] 已${checked ? '启用' : '禁用'}`);
             }

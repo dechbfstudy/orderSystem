@@ -1,4 +1,4 @@
-package com.dianchong.ordersystem.untils;
+package com.dianchong.ordersystem.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

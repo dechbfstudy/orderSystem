@@ -1,17 +1,20 @@
 package com.dianchong.ordersystem.service.impl;
 
+import com.dianchong.ordersystem.common.ResponseMsgStatus;
 import com.dianchong.ordersystem.dto.TokenResponse;
 import com.dianchong.ordersystem.entity.DcUser;
+import com.dianchong.ordersystem.exception.BusinessException;
 import com.dianchong.ordersystem.mapper.DcUserMapper;
 import com.dianchong.ordersystem.security.LoginUser;
 import com.dianchong.ordersystem.service.AuthService;
-import com.dianchong.ordersystem.untils.JwtUtils;
+import com.dianchong.ordersystem.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -26,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private DcUserMapper userMapper;
 
+    @Transactional
     @Override
     public TokenResponse login(String account, String password, Boolean rememberMe) {
         // 1. Spring Security 认证 (Argon2 校验)
@@ -59,8 +63,8 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse refreshToken(String refreshToken) {
         // 1. 校验 Refresh Token 格式和过期时间
         if (refreshToken == null || jwtUtils.isTokenExpired(refreshToken)) {
-            // 返回 403 Forbidden，前端接收到后应跳转登录页
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Refresh token 已过期或无效，请重新登录");
+            // 前端接收到后应跳转登录页
+            throw new BusinessException(ResponseMsgStatus.INVALID_TOKEN);
         }
 
         // 2. 提取用户名
@@ -68,13 +72,13 @@ public class AuthServiceImpl implements AuthService {
         try {
             userAccount = jwtUtils.extractUserAccount(refreshToken);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无效的 Token");
+            throw new BusinessException(ResponseMsgStatus.INVALID_TOKEN);
         }
 
         // 3. 【关键安全步骤】查询数据库，确保用户未被禁用/删除
         DcUser user = userMapper.queryByAccount(userAccount);
         if (user == null || !user.getIsDisabled()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "账号已禁用或不存在");
+            throw new BusinessException(ResponseMsgStatus.USER_NOT_EXIST);
         }
 
         // 4. 签发新的 Access Token (10分钟)
