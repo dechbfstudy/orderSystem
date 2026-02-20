@@ -75,9 +75,13 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ResponseMsgStatus.INVALID_TOKEN);
         }
 
-        // 3. 【关键安全步骤】查询数据库，确保用户未被禁用/删除
+        // 3. 【关键安全步骤】查询数据库，确保用户存在且未被禁用
         DcUser user = userMapper.queryByAccount(userAccount);
-        if (user == null || !user.getIsDisabled()) {
+        if (user == null) {
+            throw new BusinessException(ResponseMsgStatus.USER_NOT_EXIST);
+        }
+        // isDisabled为true表示禁用，false表示启用
+        if (user.getIsDisabled() == null || user.getIsDisabled()) {
             throw new BusinessException(ResponseMsgStatus.USER_NOT_EXIST);
         }
 

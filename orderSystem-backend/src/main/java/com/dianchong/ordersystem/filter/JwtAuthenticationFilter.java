@@ -36,8 +36,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwt = authHeader.substring(7);
             try {
                 username = jwtUtils.extractUserAccount(jwt);
+                // 额外验证token是否过期
+                if (jwtUtils.isTokenExpired(jwt)) {
+                    username = null;
+                }
             } catch (Exception e) {
-                // Token 无效或过期
+                // Token 无效或格式错误
+                username = null;
             }
         }
 

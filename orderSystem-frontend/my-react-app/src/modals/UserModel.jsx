@@ -40,10 +40,13 @@ const UserModal = ({modalTitle, isModalOpen, setIsModalOpen, currentRecord, upda
 
         }else{
             createUser(values).then(r => {
-                if (r === 'success') {
+                if (r.code === 200){
                     message.success('用户创建成功');
                     setModalLoading(false);
                     setIsModalOpen(false);
+                }else {
+                    message.error(r.message);
+                    setModalLoading(false);
                 }
             }).catch(e =>{
                 message.error('操作失败：' + e.message);

@@ -20,8 +20,15 @@ const LoginPage = () => {
         //调用登录接口
         try{
             const res = await login(values);
-            console.log(res)
-            const { accessToken, refreshToken,username } = res.data;
+            console.log('登录响应:', res)
+            
+            // 根据后端返回的数据结构处理
+            const data = res.data || res; // 兼容不同响应格式
+            const { accessToken, refreshToken, username } = data;
+
+            if (!accessToken || !refreshToken) {
+                throw new Error('Token获取失败');
+            }
 
             setTokens(accessToken, refreshToken, values.rememberMe);
             setUserInfo({username: username}, values.rememberMe);
@@ -31,7 +38,14 @@ const LoginPage = () => {
 
         }  catch (error) {
             console.error('登录失败', error);
-            message.error(t('登录失败！用户名或密码错误！'));
+            // 根据错误类型显示不同提示
+            if (error.response?.status === 401) {
+                message.error(t('用户名或密码错误！'));
+            } else if (error.message === 'Network Error') {
+                message.error(t('网络连接失败，请检查网络设置'));
+            } else {
+                message.error(t('登录失败，请稍后重试！'));
+            }
         } finally {
             setLoading(false);
         }

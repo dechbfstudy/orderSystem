@@ -32,10 +32,10 @@ CREATE TABLE DC_USER
     LOGIN_COUNT     INT          NOT NULL DEFAULT 0 COMMENT '登录次数',
 
     PRIMARY KEY (USER_ID),
-    UNIQUE KEY IDX_USERNAME (USERNAME),
+    UNIQUE KEY IDX_USERNAME (USER_ACCOUNT),
     KEY             IDX_CREATE_TIME (CREATE_TIME),
     KEY             IDX_IS_DISABLED (IS_DISABLED),
-    KEY             IDX_USERNAME_PASSWORD (USERNAME, PASSWORD)
+    KEY             IDX_USER_ACCOUNT_PASSWORD (USER_ACCOUNT, PASSWORD)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
 
@@ -115,11 +115,11 @@ CREATE TABLE DC_CUSTOMER_ADDRESS
 
 -- 3. 插入初始数据（密码使用加密存储）
 INSERT INTO DC_USER (USERNAME, USER_ACCOUNT, PASSWORD, CREATE_TIME, IS_DISABLED)
-VALUES ('admin', 'admin',
+VALUES ('超级管理员', 'admin',
         '$argon2id$v=19$m=16384,t=2,p=1$FvNNU0W62b5AMKSRMY1v5Q$LhFzsWCP7M1wALDwLa4jteuMjbrB/ect/6CI7mFHzEI', NOW(), 1),
-       ('test', 'test',
+       ('测试用户', 'test',
         '$argon2id$v=19$m=16384,t=2,p=1$dFXvvL470dPInlVIsjWaXQ$HR9SY5X+TuxuSoLGfm1atp1L6QbwXGDHoZ+ti/OjYaE', NOW(), 1),
-       ('guest', 'guest',
+       ('访客', 'guest',
         '$argon2id$v=19$m=16384,t=2,p=1$JEK/gRCcflpOQi7tQME+sA$MrKRJZ+dnmhTe8Wg+khdoZHEJHo17FfJLgIDzg0WMAU', NOW(),
         0); -- 禁用账户示例
 

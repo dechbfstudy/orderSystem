@@ -21,12 +21,17 @@ service.interceptors.request.use(
         }
         // 使用工具类获取 Token
         const token = getAccessToken();
+        console.log('请求拦截器token：', token)
         if (token) {
             config.headers['Authorization'] = 'Bearer ' + token;
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        console.error('请求拦截器错误:', error);
+        message.error('请求配置错误');
+        return Promise.reject(error);
+    }
 );
 
 // === 响应拦截器 ===
